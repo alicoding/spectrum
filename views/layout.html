@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang=en>
+<head>
+<meta charset=utf-8>
+  <title>{% block title %}{{tite}}{% endblock %} - Ali Al Dallal's blog</title>
+  {% block css %}
+    <link href="/css/bootstrap-responsive.min.css" rel="stylesheet">
+  {% endblock %}
+</head>
+<body>
+
+	{% block header %}
+  {% endblock %}
+
+  <main>{% block body %}{% endblock %}</main>
+
+
+    {% block footer %}
+    {% endblock %}
+
+</body>
+</html>
