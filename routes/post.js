@@ -1,6 +1,6 @@
 var request = require('request');
 
-module.exports = function (req, res) {
+exports.getPost = function (req, res) {
     var id = req.params.id;
 
     request(id, function (error, response, body) {
@@ -21,4 +21,11 @@ module.exports = function (req, res) {
       return res.render("single.html", body);
 
     });
+};
+
+exports.create = function(req,res){
+
+      return res.render("single.html", {title:"You are about to create a post"});
+
+
 };
