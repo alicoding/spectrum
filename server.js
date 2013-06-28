@@ -28,7 +28,7 @@ app.use( function( err, req, res, next) {
 });
 app.use( function( req, res, next ) {
   res.status( 404 );
-  res.render( 'error.html', { code: 404 });
+  res.render( 'error.html', { code: 404, message: "Page not found :(" });
 });
 
 

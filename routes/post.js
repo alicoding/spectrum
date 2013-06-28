@@ -15,7 +15,8 @@ exports.getPost = function (req, res) {
       if (!body) {
         res.status(404);
         return res.render('error.html', {
-          code: 404
+          code: 404,
+          message: "Page not found :("
         });
       }
       return res.render("single.html", body);
@@ -25,7 +26,6 @@ exports.getPost = function (req, res) {
 
 exports.create = function(req,res){
 
-      return res.render("single.html", {title:"You are about to create a post"});
-
+  return res.render("single.html", {title:"You are about to create a post"});
 
 };
