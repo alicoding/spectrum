@@ -32,8 +32,8 @@ app.use( function( req, res, next ) {
 });
 
 
-app.get('/', route.home ("index") );
-app.get('/:id', route.post(app) );
+app.get('/', route.home ("index"));
+app.get('/:id', route.post);
 
 app.listen( 3000, function(){
   console.log('Express server listening on port  3000')});
