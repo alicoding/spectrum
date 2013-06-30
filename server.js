@@ -42,13 +42,9 @@ app.configure( function() {
 });
 
 app.get('/', Mongo.isDbOnline, route ("index"));
-app.get('/admin/setting', Mongo.isDbOnline, route("admin/setting"));
+app.get('/admin/setting/author', Mongo.isDbOnline, route("admin/author-setting"));
 
-app.post('/console', function(req, res){
-  var obj = {};
-  console.log('body: ' + JSON.stringify(req.body));
-  res.send(req.body);
-});
+app.post('/admin/setting/author', middleware.saveAuthorSetting);
 
 app.get('/:id', middleware.getPost);
 app.get('/post/create', middleware.create);
