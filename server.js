@@ -4,6 +4,8 @@ var express   = require( "express" ),
     path      = require( "path" ),
     route     = require( "./routes" );
 
+// Load config from ".env"
+habitat.load();
 
 var app = express(),
 					env = new habitat(),
@@ -11,6 +13,7 @@ var app = express(),
           Posts = require( "./lib/models/posts" )( env, Mongo.mongoInstance() ),
 					nunjucksEnv = new nunjucks.Environment( new nunjucks.FileSystemLoader( path.join( __dirname, 'views' )));
 
+var middleware = require( "./lib/middleware" )( Posts, env );
 
 // Express Configuration
 app.configure( function() {
@@ -38,11 +41,18 @@ app.configure( function() {
 
 });
 
-app.get('/', route.home ("index"));
-app.get('/:id', route.post.getPost);
-app.get('/post/create', route.post.create);
-app.get('/page/create', route.page.create);
+app.get('/', Mongo.isDbOnline, route ("index"));
+app.get('/console', Mongo.isDbOnline, route("console"));
+
+app.post('/console', function(req, res){
+  var obj = {};
+  console.log('body: ' + JSON.stringify(req.body));
+  res.send(req.body);
+});
+
+app.get('/:id', middleware.getPost);
+app.get('/post/create', middleware.create);
 
 
-app.listen( 3000, function(){
-  console.log('Express server listening on port  3000')});
+app.listen( env.get("PORT"), function(){
+  console.log('Express server listening on port ' + env.get("PORT"))});

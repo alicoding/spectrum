@@ -1,3 +1,5 @@
-exports.home = require('./home');
-exports.post = require('./post');
-exports.page = require('./page');
+module.exports = function( view ) {
+  return function( req, res ) {
+    res.render( view + ".html" );
+  };
+};
