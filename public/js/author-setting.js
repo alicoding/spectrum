@@ -17,11 +17,18 @@ $(function () {
         console.log(JSON.stringify(data));
       }
     });
+
+
   });
     
-    $.post('/admin/setting/author',function(data){
 
-      alert(data);
-  });
 
 });
+
+    $.post('/admin/setting/author',function(data){
+      console.log(data);
+    $("#fullName").val(data.fullName) 
+    $("#author").val(data.author);
+    $("#email").val(data.email);
+    $("#authorDesc").val(data.authorDesc);
+  });

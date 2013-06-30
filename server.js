@@ -1,26 +1,27 @@
-var express   = require( "express" ),
-		habitat   = require( "habitat" ),
-    nunjucks  = require( "nunjucks" ),
-    path      = require( "path" ),
-    route     = require( "./routes" );
+var elasticsearch = require('elasticsearch'),
+    express       = require( "express" ),
+    nunjucks      = require( "nunjucks" ),
+    path          = require( "path" ),
+    route         = require( "./routes" );
 
-// Load config from ".env"
-habitat.load();
 
-var app = express(),
-					env = new habitat(),
-          Mongo = require( "./lib/mongoose" )( env ),
-          Posts = require( "./lib/models/posts" )( env, Mongo.mongoInstance() ),
-					nunjucksEnv = new nunjucks.Environment( new nunjucks.FileSystemLoader( path.join( __dirname, 'views' )));
 
-var middleware = require( "./lib/middleware" )( Posts, env );
+var app           = express(),
+    env           = require('./config/environment'),
+    nunjucksEnv   = new nunjucks.Environment( new nunjucks.FileSystemLoader( path.join( __dirname, 'views' )));
+    logger        = require('./lib/logger'),
+    opts          = {index: 'spectrum', type:'post'},
+    es            = elasticsearch(opts);
+    middleware    = require( "./lib/middleware" )( es, opts, env );
+
 
 // Express Configuration
 app.configure( function() {
 
+
   nunjucksEnv.express( app );
   app.disable( "x-powered-by" );
-
+  app.use(express.logger());
   app.use( express.compress() );
   app.use( express.static( path.join( __dirname, "public" )));
   app.use( express.bodyParser() );
@@ -41,14 +42,13 @@ app.configure( function() {
 
 });
 
-app.get('/', Mongo.isDbOnline, route ("index"));
-app.get('/admin/setting/author', Mongo.isDbOnline, route("admin/author-setting"));
-
-app.post('/admin/setting/author', middleware.saveAuthorSetting);
+app.get('/', route ("index"));
+app.get('/admin/setting/author', middleware.createPost, route("admin/author-setting"));
 
 app.get('/:id', middleware.getPost);
-app.get('/post/create', middleware.create);
+app.get('/post/create', middleware.createPost);
 
 
-app.listen( env.get("PORT"), function(){
-  console.log('Express server listening on port ' + env.get("PORT"))});
+app.listen( env.get('PORT'), function() {
+  logger.info("HTTP server listening on port " + env.get('PORT') + ".");
+});
