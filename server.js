@@ -42,7 +42,7 @@ app.configure( function() {
 });
 
 app.get('/', Mongo.isDbOnline, route ("index"));
-app.get('/console', Mongo.isDbOnline, route("console"));
+app.get('/admin/setting', Mongo.isDbOnline, route("admin/setting"));
 
 app.post('/console', function(req, res){
   var obj = {};
