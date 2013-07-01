@@ -1,9 +1,9 @@
 {% extends "layout.html" %}
 {% block title %}Home{% endblock %}
 {% block body %}
-  <li>Title: {{ _id }}</li>
-  <li>Content: {{ _source.content }}</li>
-  <li>email: {{ _source.email }}</li>
-  <li>Author: {{ _source.author }}</li>
-  <li>Posted On: {{ _source.postedOn }}</li>
+  <h2>Title: {{ title }}</h2>
+  <p>Content: {{ content }}</p>
+  <p>email: {{ email }}</p>
+  <p>Author: {{ author }}</p>
+  <p>Posted On: {{ postedOn }}</p>
 {% endblock %}

@@ -4,13 +4,14 @@
 <h1>Hello World</h1>
 
 <h1>Posts</h1>
-<ul>
-{% for item in hits %}
-  <li>Title: {{ item._id }}</li>
-  <li>Content: {{ item._source.content }}</li>
-  <li>email: {{ item._source.email }}</li>
-  <li>Author: {{ item._source.author }}</li>
-  <li>Posted On: {{ item._source.postedOn }}</li>
+
+{% for post in posts %}
+<div>
+  <h2><a href="/{{ post.title }}">{{ post.title }}</a></h2>
+  <p>email: {{ post.email }}</p>
+  <p>Author: {{ post.author }}</p>
+  <p>Posted On: {{ post.postedOn }}</p>
+</div>
 {% endfor %}
-</ul>
+
 {% endblock %}
