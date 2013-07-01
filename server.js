@@ -4,15 +4,13 @@ var elasticsearch = require('elasticsearch'),
     path          = require( "path" ),
     route         = require( "./routes" );
 
-
-
 var app           = express(),
     env           = require('./config/environment'),
     nunjucksEnv   = new nunjucks.Environment( new nunjucks.FileSystemLoader( path.join( __dirname, 'views' )));
     logger        = require('./lib/logger'),
     opts          = {index: 'spectrum', type:'post'},
     es            = elasticsearch(opts);
-    middleware    = require( "./lib/middleware" )( es, opts, env );
+    middleware    = require( "./lib/middleware" )( elasticsearch, es, opts, env );
 
 
 // Express Configuration
@@ -46,7 +44,9 @@ app.get('/', route ("index"));
 app.get('/admin/setting/author', middleware.createPost, route("admin/author-setting"));
 
 app.get('/:id', middleware.getPost);
-app.get('/post/create', middleware.createPost);
+app.get('/post/create/:id', middleware.createPost);
+
+app.get('/admin/delete/all', middleware.dropEScontent);
 
 
 app.listen( env.get('PORT'), function() {
