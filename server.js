@@ -10,7 +10,7 @@ var app           = express(),
     logger        = require('./lib/logger'),
     opts          = {index: 'spectrum', type:'post'},
     es            = elasticsearch(opts);
-    middleware    = require( "./lib/middleware" )( elasticsearch, es, opts, env );
+    middleware    = require( "./lib/middleware" )( elasticsearch, es, env );
 
 
 // Express Configuration
@@ -41,7 +41,10 @@ app.configure( function() {
 });
 
 app.get('/', route ("index"));
-app.get('/admin/setting/author', middleware.createPost, route("admin/author-setting"));
+app.get('/admin/setting/author', route("admin/author-setting"));
+
+app.post('/admin/setting/author/g', middleware.getAuthorSetting);
+app.post('/admin/setting/author/s', middleware.saveAuthorSetting);
 
 app.get('/:id', middleware.getPost);
 app.get('/post/create/:id', middleware.createPost);
