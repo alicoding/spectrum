@@ -1,6 +1,9 @@
 {% extends "layout.html" %}
 {% block title %}Home{% endblock %}
 {% block body %}
-<h1>{{name}}</h1>
-<p>{{hi}}</p>
+  <li>Title: {{ _id }}</li>
+  <li>Content: {{ _source.content }}</li>
+  <li>email: {{ _source.email }}</li>
+  <li>Author: {{ _source.author }}</li>
+  <li>Posted On: {{ _source.postedOn }}</li>
 {% endblock %}

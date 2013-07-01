@@ -2,4 +2,15 @@
 {% block title %}Home{% endblock %}
 {% block body %}
 <h1>Hello World</h1>
+
+<h1>Posts</h1>
+<ul>
+{% for item in hits %}
+  <li>Title: {{ item._id }}</li>
+  <li>Content: {{ item._source.content }}</li>
+  <li>email: {{ item._source.email }}</li>
+  <li>Author: {{ item._source.author }}</li>
+  <li>Posted On: {{ item._source.postedOn }}</li>
+{% endfor %}
+</ul>
 {% endblock %}

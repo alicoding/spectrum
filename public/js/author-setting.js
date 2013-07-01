@@ -11,7 +11,7 @@ $(function () {
       type: 'POST',
       data: JSON.stringify(data),
       contentType: 'application/json',
-      url: '/admin/setting/author/s',
+      url: '/setting/author/s',
       success: function (data) {
         console.log('success');
         console.log(JSON.stringify(data));
@@ -20,7 +20,7 @@ $(function () {
   });
 });
 
-  $.post('/admin/setting/author/g',function(data){
+  $.post('/setting/author/g',function(data){
     $("#fullName").val(data.fullName) 
     $("#author").val(data.author);
     $("#email").val(data.email);

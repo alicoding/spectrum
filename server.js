@@ -40,15 +40,28 @@ app.configure( function() {
 
 });
 
-app.get('/', route ("index"));
-app.get('/admin/setting/author', route("admin/author-setting"));
+app.get('/', middleware.getRecentPost);
 
-app.post('/admin/setting/author/g', middleware.getAuthorSetting);
-app.post('/admin/setting/author/s', middleware.saveAuthorSetting);
-
+//get the content by /id
 app.get('/:id', middleware.getPost);
+
+// page number
+app.get('/page/:page', middleware.getRecentPost)
+
+// author's dedicated page
+app.get('/author/:id', middleware.getAuthorDetails);
+
+//author's setting page
+app.get('/setting/author', route("admin/author-setting"));
+
+// these two routes are use to get and post to the author's setting page
+app.post('/setting/author/g', middleware.getAuthorSetting);
+app.post('/setting/author/s', middleware.saveAuthorSetting);
+
+//create dummy data
 app.get('/post/create/:id', middleware.createPost);
 
+// be careful with this route! it will delete all the data from elasticsearch
 app.get('/admin/delete/all', middleware.dropEScontent);
 
 
