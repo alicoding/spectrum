@@ -1,0 +1,91 @@
+{% extends "layout.html" %}
+{% block title %}Home{% endblock %}
+{% block body %}
+<h1>Create new post</h1>
+<div class="container">
+<div id="epiceditor"></div>
+<button id="someBtn">Click me</button>
+</div>
+<script src="../ext/js/epiceditor.min.js"></script>
+    <script src="/ext/js/jquery.js"></script>
+
+
+<script>
+var opts = {
+  container: 'epiceditor',
+  textarea: null,
+  basePath: '../ext',
+  clientSideStorage: true,
+  localStorageName: 'epiceditor',
+  useNativeFullscreen: true,
+  parser: marked,
+  file: {
+    name: 'epiceditor',
+    defaultContent: '',
+    autoSave: 100
+  },
+  theme: {
+    base: '/themes/base/epiceditor.css',
+    preview: '/themes/preview/preview-dark.css',
+    editor: '/themes/editor/epic-dark.css'
+  },
+  button: {
+    preview: true,
+    fullscreen: true
+  },
+  focusOnLoad: false,
+  shortcut: {
+    modifier: 18,
+    fullscreen: 70,
+    preview: 80
+  },
+  string: {
+    togglePreview: 'Toggle Preview Mode',
+    toggleEdit: 'Toggle Edit Mode',
+    toggleFullscreen: 'Enter Fullscreen'
+  }
+}
+var editor = new EpicEditor(opts);
+
+editor.load(function () {
+  console.log("Editor loaded.")
+});
+
+$("#someBtn").click(function (){
+  var theContent = editor.exportFile(null,'html');
+  saveToServerAjaxCall('/save', {data:theContent,title:"abcd"}, function () {
+    console.log('Data was saved to the database.');
+  });
+
+});
+
+
+function saveToServerAjaxCall(url, data, callback) {
+    // e.preventDefault() // prevents the form from being submitted
+    // console.timeEnd(data);
+    $.ajax({
+      type: 'POST',
+      data: JSON.stringify(data),
+      contentType: 'application/json',
+      url: '/post/edit',
+      success: function (data) {
+        console.log('success');
+        console.log(JSON.stringify(data));
+      }
+    });
+  // });
+// });
+
+//   $.post('/setting/author/g',function(data){
+//     $("#fullName").val(data.fullName) 
+//     $("#author").val(data.author);
+//     $("#email").val(data.email);
+//     $("#authorDesc").val(data.authorDesc);
+//   });
+}
+
+</script>
+
+
+
+{% endblock %}

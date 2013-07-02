@@ -1,4 +1,4 @@
-var elasticsearch = require('elasticsearch'),
+var ESsetup       = require('./config/ESconfig'),
     express       = require( "express" ),
     nunjucks      = require( "nunjucks" ),
     path          = require( "path" ),
@@ -8,18 +8,14 @@ var app           = express(),
     env           = require('./config/environment'),
     nunjucksEnv   = new nunjucks.Environment( new nunjucks.FileSystemLoader( path.join( __dirname, 'views' )));
     logger        = require('./lib/logger'),
-    opts          = {index: 'spectrum', type:'post'},
-    es            = elasticsearch(opts);
-    middleware    = require( "./lib/middleware" )( elasticsearch, es, env );
-
+    middleware    = require('./lib/middleware')(ESsetup);
 
 // Express Configuration
 app.configure( function() {
 
-
   nunjucksEnv.express( app );
   app.disable( "x-powered-by" );
-  app.use(express.logger());
+  app.use(express.logger('dev'));
   app.use( express.compress() );
   app.use( express.static( path.join( __dirname, "public" )));
   app.use( express.bodyParser() );
@@ -38,7 +34,11 @@ app.configure( function() {
     res.render( 'error.html', { code: 404, message: "Page not found :(" });
   });
 
+
 });
+
+
+app.get('/css/css', route('admin/create'));
 
 app.get('/', middleware.getRecentPost);
 
@@ -57,6 +57,7 @@ app.get('/setting/author', route("admin/author-setting"));
 // these two routes are use to get and post to the author's setting page
 app.post('/setting/author/g', middleware.getAuthorSetting);
 app.post('/setting/author/s', middleware.saveAuthorSetting);
+app.post('/post/edit', middleware.createPost);
 
 //create dummy data
 app.get('/post/create/:id', middleware.createPost);
