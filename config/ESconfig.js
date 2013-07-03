@@ -6,9 +6,15 @@ var
   },
   es = elasticsearch(config);
 
-es.indices.exists(config, function (err, data) {
+es.indices.exists(function (err, data) {
   if (err) {
+    console.log(err);
+    return;
+  }
+
+  if (!data.exists) {
     es.indices.createIndex(function (err, data) {
+      // response here
     });
   }
 });
