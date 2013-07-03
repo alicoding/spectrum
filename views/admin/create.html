@@ -3,7 +3,9 @@
 {% block body %}
 <h1>Create new post</h1>
 <div class="container">
-<div id="epiceditor"></div>
+<input type="text" id="title" class="span12" placeholder="The title of the draft goes here" autocomplete="off">
+
+<div style="height:500px"id="epiceditor"></div>
 <button id="someBtn">Click me</button>
 </div>
 <script src="../ext/js/epiceditor.min.js"></script>
@@ -20,13 +22,13 @@ var opts = {
   useNativeFullscreen: true,
   parser: marked,
   file: {
-    name: 'epiceditor',
+    name: 'spectrum',
     defaultContent: '',
     autoSave: 100
   },
   theme: {
     base: '/themes/base/epiceditor.css',
-    preview: '/themes/preview/preview-dark.css',
+    preview: '/themes/preview/bartik.css',
     editor: '/themes/editor/epic-dark.css'
   },
   button: {
@@ -51,9 +53,17 @@ editor.load(function () {
   console.log("Editor loaded.")
 });
 
+var files = editor.getFiles();
+for (x in files) {
+  console.log('File: ' + x); //Returns the name of each file
+};
+
 $("#someBtn").click(function (){
+
   var theContent = editor.exportFile(null,'html');
-  saveToServerAjaxCall('/save', {data:theContent,title:"abcd"}, function () {
+      var _title = $("#title").val();
+      console.log(_title);
+  saveToServerAjaxCall('/save', {data:theContent,title:_title}, function () {
     console.log('Data was saved to the database.');
   });
 
@@ -61,20 +71,20 @@ $("#someBtn").click(function (){
 
 
 function saveToServerAjaxCall(url, data, callback) {
-    // e.preventDefault() // prevents the form from being submitted
-    // console.timeEnd(data);
-    $.ajax({
-      type: 'POST',
-      data: JSON.stringify(data),
-      contentType: 'application/json',
-      url: '/post/edit',
-      success: function (data) {
-        console.log('success');
-        console.log(JSON.stringify(data));
-      }
-    });
-  // });
-// });
+
+  $.ajax({
+    type: 'POST',
+    data: JSON.stringify(data),
+    contentType: 'application/json',
+    url: '/post/edit',
+    success: function (data) {
+      console.log('success');
+      console.log(JSON.stringify(data));
+      editor.remove('spectrum');
+    }
+  });
+}
+
 
 //   $.post('/setting/author/g',function(data){
 //     $("#fullName").val(data.fullName) 
@@ -82,7 +92,7 @@ function saveToServerAjaxCall(url, data, callback) {
 //     $("#email").val(data.email);
 //     $("#authorDesc").val(data.authorDesc);
 //   });
-}
+
 
 </script>
 
