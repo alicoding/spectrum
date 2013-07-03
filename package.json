@@ -6,7 +6,7 @@
 		"start": "node server.js"
 	},
 	"dependencies": {
-		"elasticsearch": "0.3.2",		
+		"elasticsearch": "~0.3.2",		
 		"express": "3.2.5",
 		"habitat": "0.4.1",
 		"nunjucks": "*",
