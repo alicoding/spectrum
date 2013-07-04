@@ -21,11 +21,11 @@ app.configure( function() {
   app.use( express.bodyParser() );
 
   app.use( app.router );
+
   app.use( function( err, req, res, next) {
     if ( !err.status ) {
       err.status = 500;
     }
-  
     res.status( err.status );
     res.render( 'error.html', { message: err.message, code: err.status });
   });
@@ -33,12 +33,7 @@ app.configure( function() {
     res.status( 404 );
     res.render( 'error.html', { code: 404, message: "Page not found :(" });
   });
-
-
 });
-
-
-app.get('/css/css', route('admin/create'));
 
 app.get('/', middleware.getRecentPost);
 
@@ -46,6 +41,9 @@ app.get('/', middleware.getRecentPost);
 app.get('/:id', middleware.getPost);
 
 // page number
+app.get( '/page/1', function( req, res ){
+  res.redirect( 301, '/' );
+});
 app.get('/page/:page', middleware.getRecentPost)
 
 // author's dedicated page
@@ -57,10 +55,15 @@ app.get('/setting/author', route("admin/author-setting"));
 // these two routes are use to get and post to the author's setting page
 app.post('/setting/author/g', middleware.getAuthorSetting);
 app.post('/setting/author/s', middleware.saveAuthorSetting);
-app.post('/post/edit', middleware.createPost);
 
-//create dummy data
-app.get('/post/create/:id', middleware.createPost);
+//create new post
+app.get('/new/post', route('admin/editor'));
+app.post('/new/post', middleware.createPost);
+
+//edit an existing post
+app.get('/:id/edit', route('admin/editor'));
+app.post('/setting/author/s', middleware.saveAuthorSetting);
+
 
 // be careful with this route! it will delete all the data from elasticsearch
 app.get('/admin/delete/all', middleware.dropEScontent);

@@ -4,19 +4,29 @@
 <meta charset=utf-8>
   <title>{% block title %}{{tite}}{% endblock %} - Ali Al Dallal's blog</title>
   {% block css %}
+    <link href="/css/bootstrap.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="/css/bootstrap-responsive.min.css" rel="stylesheet">
 
   {% endblock %}
 
 	{% block header %}
+
   {% endblock %}
 
-  <main>{% block body %}{% endblock %}</main>
+  {% block body %}{% endblock %}
+</div>
+<div class="clearfix"></div>
 
     {% block footer %}
+
+
     <script src="/ext/js/jquery.js"></script>
+    <script src="/ext/js/bootstrap.min.js"></script>
     {% endblock %}
 
 
 </body>
 </html>
+
+

@@ -4,7 +4,6 @@
 <h1>Create new post</h1>
 <div class="container">
 <input type="text" id="title" class="span12" placeholder="The title of the draft goes here" autocomplete="off">
-
 <div style="height:500px"id="epiceditor"></div>
 <button id="someBtn">Click me</button>
 </div>
@@ -18,7 +17,7 @@ var opts = {
   textarea: null,
   basePath: '../ext',
   clientSideStorage: true,
-  localStorageName: 'epiceditor',
+  localStorageName: 'spectrum',
   useNativeFullscreen: true,
   parser: marked,
   file: {
@@ -76,7 +75,7 @@ function saveToServerAjaxCall(url, data, callback) {
     type: 'POST',
     data: JSON.stringify(data),
     contentType: 'application/json',
-    url: '/post/edit',
+    url: '/new/post',
     success: function (data) {
       console.log('success');
       console.log(JSON.stringify(data));
@@ -86,12 +85,14 @@ function saveToServerAjaxCall(url, data, callback) {
 }
 
 
-//   $.post('/setting/author/g',function(data){
-//     $("#fullName").val(data.fullName) 
-//     $("#author").val(data.author);
-//     $("#email").val(data.email);
-//     $("#authorDesc").val(data.authorDesc);
-//   });
+  $.post('/post/edit',function(data){
+    alert(data);
+    alert("sdd");
+    $("#fullName").val(data.fullName) 
+    $("#author").val(data.author);
+    $("#email").val(data.email);
+    $("#authorDesc").val(data.authorDesc);
+  });
 
 
 </script>
