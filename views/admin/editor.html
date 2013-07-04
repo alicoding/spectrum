@@ -60,9 +60,10 @@ for (x in files) {
 $("#someBtn").click(function (){
 
   var theContent = editor.exportFile(null,'html');
-      var _title = $("#title").val();
+      var _title = $("#title").val(),
+      _url = convertToSlug($('#title').val()).trim();
       console.log(_title);
-  saveToServerAjaxCall('/save', {data:theContent,title:_title}, function () {
+      saveToServerAjaxCall('/save', {data:theContent,title:_title,url:_url}, function () {
     console.log('Data was saved to the database.');
   });
 
@@ -77,22 +78,31 @@ function saveToServerAjaxCall(url, data, callback) {
     contentType: 'application/json',
     url: '/new/post',
     success: function (data) {
-      console.log('success');
-      console.log(JSON.stringify(data));
       editor.remove('spectrum');
+      console.log(data);
+      window.location.href = '/'+data.url;
     }
   });
 }
 
+function convertToSlug(Text)
+{
+    return Text
+        .toLowerCase()
+        .replace(/ /g,' ')
+        .replace(/[^\w-]+/g,' ')
+        ;
+}
 
-  $.post('/post/edit',function(data){
-    alert(data);
-    alert("sdd");
-    $("#fullName").val(data.fullName) 
-    $("#author").val(data.author);
-    $("#email").val(data.email);
-    $("#authorDesc").val(data.authorDesc);
-  });
+
+  // $.post('/new/post',function(data){
+  //   alert(data);
+  //   alert("sdd");
+  //   $("#fullName").val(data.fullName) 
+  //   $("#author").val(data.author);
+  //   $("#email").val(data.email);
+  //   $("#authorDesc").val(data.authorDesc);
+  // });
 
 
 </script>

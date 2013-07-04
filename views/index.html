@@ -5,7 +5,7 @@
 <h1>Latest blog post</h1>
 
 {% for post in posts %}
-  <h2><a href="/{{ post.title }}">{{ post.title }}</a></h2>
+  <h2><a href="/{{ post.url }}">{{ post.title }}</a></h2>
   <p>email: {{ post.email }}</p>
   <p>Author: {{ post.author }}</p>
   <p>Posted On: {{ post.postedOn }}</p>
