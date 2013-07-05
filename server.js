@@ -73,6 +73,20 @@ app.post('/post/edit/g', middleware.editPost);
 app.get('/admin/delete/all', middleware.dropEScontent);
 app.get('/new/editor', route.index);
 
+/* Dillinger Actions */
+// save a markdown file and send header to download it directly as response 
+app.post('/factory/fetch_markdown', route.fetch_md)
+
+// Route to handle download of md file
+app.get('/files/md/:mdid', route.download_md)
+
+// Save an html file and send header to download it directly as response 
+app.post('/factory/fetch_html', route.fetch_html)
+app.post('/factory/fetch_html_direct', route.fetch_html_direct)
+
+// Route to handle download of html file
+app.get('/files/html/:html', route.download_html)
+
 app.listen( env.get('PORT'), function() {
   logger.info("HTTP server listening on port " + env.get('PORT') + ".");
 });
