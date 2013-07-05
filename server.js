@@ -2,7 +2,9 @@ var ESsetup       = require('./config/ESconfig'),
     express       = require( "express" ),
     nunjucks      = require( "nunjucks" ),
     path          = require( "path" ),
-    route         = require( "./routes" );
+    route         = require( "./routes" ),
+    fs            = require('fs');
+
 
 var app           = express(),
     env           = require('./config/environment'),
@@ -19,8 +21,6 @@ app.configure( function() {
   app.use( express.compress() );
   app.use( express.static( path.join( __dirname, "public" )));
   app.use( express.bodyParser() );
-  app.locals.readmes = "sdsda";
-
 
   app.use( app.router );
 
@@ -61,7 +61,8 @@ app.post('/setting/author/g', middleware.getAuthorSetting);
 app.post('/setting/author/s', middleware.saveAuthorSetting);
 
 //create new post
-app.get('/new/post', route.pages('admin/editor'));
+app.get('/new/post', route.index);
+// app.get('/new/post', route.pages('admin/editor'));
 app.post('/new/post', middleware.createPost);
 
 //edit an existing post
@@ -71,21 +72,11 @@ app.post('/post/edit/g', middleware.editPost);
 
 // be careful with this route! it will delete all the data from elasticsearch
 app.get('/admin/delete/all', middleware.dropEScontent);
-app.get('/new/editor', route.index);
-
-/* Dillinger Actions */
-// save a markdown file and send header to download it directly as response 
-app.post('/factory/fetch_markdown', route.fetch_md)
-
-// Route to handle download of md file
-app.get('/files/md/:mdid', route.download_md)
 
 // Save an html file and send header to download it directly as response 
-app.post('/factory/fetch_html', route.fetch_html)
-app.post('/factory/fetch_html_direct', route.fetch_html_direct)
+app.post('/factory/fetch_html_direct', route.fetch_html_direct);
 
-// Route to handle download of html file
-app.get('/files/html/:html', route.download_html)
+
 
 app.listen( env.get('PORT'), function() {
   logger.info("HTTP server listening on port " + env.get('PORT') + ".");

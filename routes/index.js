@@ -16,13 +16,7 @@ exports.index = function(req, res) {
 
 // /* Core stuff */
 
-exports.fetch_md = Core.fetchMd
-exports.download_md = Core.downloadMd
-exports.fetch_html = Core.fetchHtml
 exports.fetch_html_direct = Core.fetchHtmlDirect
-exports.download_html = Core.downloadHtml
-exports.fetch_pdf = Core.fetchPdf
-exports.download_pdf = Core.downloadPdf
 
 /* End Core stuff */
 
