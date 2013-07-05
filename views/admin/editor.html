@@ -7,15 +7,14 @@
 <div style="height:500px"id="epiceditor"></div>
 <button id="someBtn">Click me</button>
 </div>
-<script src="../ext/js/epiceditor.min.js"></script>
+<script src="/ext/js/epiceditor.min.js"></script>
     <script src="/ext/js/jquery.js"></script>
-
 
 <script>
 var opts = {
   container: 'epiceditor',
   textarea: null,
-  basePath: '../ext',
+  basePath: '/ext',
   clientSideStorage: true,
   localStorageName: 'spectrum',
   useNativeFullscreen: true,
@@ -62,7 +61,12 @@ $("#someBtn").click(function (){
   var theContent = editor.exportFile(null,'html');
       var _title = $("#title").val(),
       _url = convertToSlug($('#title').val()).trim();
-      console.log(_title);
+      if (!_title){
+        return alert("Please enter the title");
+      } 
+      if(!theContent) {
+        return alert("Please enter some content");
+      }
       saveToServerAjaxCall('/save', {data:theContent,title:_title,url:_url}, function () {
     console.log('Data was saved to the database.');
   });
@@ -77,9 +81,22 @@ function saveToServerAjaxCall(url, data, callback) {
     data: JSON.stringify(data),
     contentType: 'application/json',
     url: '/new/post',
+    statusCode: {
+      200: function (response) {
+
+      },
+      201: function (response) {
+
+      },
+      401: function (response) {
+
+      },
+      404: function (response) {
+
+      }
+   },
     success: function (data) {
       editor.remove('spectrum');
-      console.log(data);
       window.location.href = '/'+data.url;
     }
   });
@@ -94,14 +111,18 @@ function convertToSlug(Text)
         ;
 }
 
+var content = "<h1>Hello World</h1>
+<h1>He</h1>
+<h1>wawe</h1>
+";
+// var title = "{{title}}";
+editor.importFile('spectrum',content);
+ $("#title").val(title);
+  // $.post('/post/edit/g',function(data){
+  //   console.log({{data.title}});
+  //   $("#title").val(data.title);
+  //    //Imports a file when the user clicks this button
 
-  // $.post('/new/post',function(data){
-  //   alert(data);
-  //   alert("sdd");
-  //   $("#fullName").val(data.fullName) 
-  //   $("#author").val(data.author);
-  //   $("#email").val(data.email);
-  //   $("#authorDesc").val(data.authorDesc);
   // });
 
 

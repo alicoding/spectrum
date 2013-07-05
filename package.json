@@ -9,6 +9,7 @@
 		"elasticsearch": "~0.3.2",		
 		"express": "3.2.5",
 		"habitat": "0.4.1",
+		"node-markdown": ">=0.1.0",
 		"nunjucks": "*",
 		"path": "*",
 		"request": "*",
