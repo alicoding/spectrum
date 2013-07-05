@@ -66,15 +66,12 @@ app.get('/new/post', route.index);
 app.post('/new/post', middleware.createPost);
 
 //edit an existing post
-
 app.post('/post/edit/g', middleware.editPost);
 
 
 // be careful with this route! it will delete all the data from elasticsearch
 app.get('/admin/delete/all', middleware.dropEScontent);
 
-// Save an html file and send header to download it directly as response 
-app.post('/factory/fetch_html_direct', route.fetch_html_direct);
 
 
 

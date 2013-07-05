@@ -3,7 +3,6 @@ $(function(){
   var editor
     , converter
     , autoInterval
-    , githubUser
     , paperImgPath = '/img/notebook_paper_200x200.gif'
     , profile = 
       {
@@ -15,11 +14,7 @@ $(function(){
           enabled: true
         , interval: 3000 // might be too aggressive; don't want to block UI for large saves.
         }
-      , current_filename : 'Title goes here'
-      , dropbox:
-        {
-          filepath: '/Dillinger/'
-        }
+      , current_filename : ''
       }
 
   // Feature detect ish
@@ -32,8 +27,6 @@ $(function(){
   var $theme = $('#theme-list')
     , $preview = $('#preview')
     , $autosave = $('#autosave')
-    , $import_github = $('#import_github')
-
     
   // Hash of themes and their respective background colors
   var bgColors = 
@@ -236,7 +229,7 @@ $(function(){
    * @return {String} 
    */
   function setCurrentFilenameField(str){
-    $('#filename > span[contenteditable="true"]').text( str || profile.current_filename || "Title goes here")
+    $('#filename > span[contenteditable="true"]').text( str || profile.current_filename || "")
   }
 
 
@@ -247,12 +240,10 @@ $(function(){
    */
   function init(){
 
-    if( !hasLocalStorage() ) { sadPanda() }
-    else{
       
       // Attach to jQuery support object for later use.
       $.support.transitionEnd = normalizeTransitionEnd()
-      
+      // resetProfile()
       getUserProfile()
 
       initAce()
@@ -271,7 +262,6 @@ $(function(){
               
       autoSave()
       
-    }
 
   }
 
@@ -316,11 +306,6 @@ $(function(){
     // Set text for dis/enable autosave
     $autosave.html( profile.autosave.enabled ? '<i class="icon-remove"></i>&nbsp;Disable Autosave' : '<i class="icon-ok"></i>&nbsp;Enable Autosave' )
     
-    // Check for logged in Github user and notifiy
-    githubUser = $import_github.attr('data-github-username')
-    
-    githubUser && Notifier.showMessage("What's Up " + githubUser, 1000)
-        
     setCurrentFilenameField()
     
     /* BEGIN RE-ARCH STUFF */
@@ -488,105 +473,7 @@ $(function(){
     updateUserProfile( {current_filename: f })
   }
   
-  /**
-   * XHR Post Markdown to get a md file.  Appends response to hidden iframe to 
-   * automatically download the file.
-   *
-   * @return {Void}
-   */  
-  function fetchMarkdownFile(){
-    
-    // TODO: UPDATE TO SUPPORT FILENAME NOT JUST A RANDOM FILENAME
-    var unmd = editor.getSession().getValue()
-    
-    function _doneHandler(a, b, response){
-      a = b = null // JSHint complains if a, b are null in method
-      var resp = JSON.parse(response.responseText)
-      // console.dir(resp)
-      document.getElementById('downloader').src = '/files/md/' + resp.data
-    }
 
-    function _failHandler(){
-        alert("Roh-roh. Something went wrong. :(")
-    }
-    
-    var mdConfig = {
-                      type: 'POST',
-                      data: "unmd=" + encodeURIComponent(unmd),
-                      dataType: 'json',
-                      url: '/factory/fetch_markdown',
-                      error: _failHandler,
-                      success: _doneHandler
-                    }
-
-    $.ajax(mdConfig)  
-    
-  }
-
-  /**
-   * XHR Post Markdown to get a html file.  Appends response to hidden iframe to 
-   * automatically download the file.
-   *
-   * @return {Void}
-   */  
-  function fetchHtmlFile(){
-    
-    // TODO: UPDATE TO SUPPORT FILENAME NOT JUST A RANDOM FILENAME
-    
-    var unmd = editor.getSession().getValue()
-
-    function _doneHandler(jqXHR, data, response){
-      // console.dir(resp)
-      var resp = JSON.parse(response.responseText)
-      document.getElementById('downloader').src = '/files/html/' + resp.data
-    }
-
-    function _failHandler(){
-      alert("Roh-roh. Something went wrong. :(")
-    }
-
-    var config = {
-                      type: 'POST',
-                      data: "unmd=" + encodeURIComponent(unmd),
-                      dataType: 'json',
-                      url: '/factory/fetch_html',
-                      error: _failHandler,
-                      success: _doneHandler
-                    }
-
-    $.ajax(config)  
-    
-  }
-
-  function showHtml(){
-    
-    // TODO: UPDATE TO SUPPORT FILENAME NOT JUST A RANDOM FILENAME
-    
-    var unmd = editor.getSession().getValue()
-
-    function _doneHandler(jqXHR, data, response){
-      // console.dir(resp)
-      var resp = JSON.parse(response.responseText)
-      $('#myModalBody').text(resp.data)
-      $('#myModal').modal()
-    }
-
-    function _failHandler(){
-      alert("Roh-roh. Something went wrong. :(")
-    }
-
-    var config = {
-                      type: 'POST',
-                      data: "unmd=" + encodeURIComponent(unmd),
-                      dataType: 'json',
-                      url: '/factory/fetch_html_direct',
-                      error: _failHandler,
-                      success: _doneHandler
-                    }
-
-    $.ajax(config)  
-    
-  }
 
   /**
    * Show a sad panda because they are using a shitty browser. 
@@ -754,7 +641,7 @@ $(function(){
         return false
       })
 
- $("#someBtn").click(function (){
+ $("#post").click(function (){
 
   var theContent = editor.getSession().getValue(),
    _title = getCurrentFilenameFromField(),
@@ -808,14 +695,6 @@ function convertToSlug(Text)
         .replace(/[^\w-]+/g,' ')
         ;
 }
-
-    $('#show_html')
-      .on('click', function(){
-        showHtml()
-        $('.dropdown').removeClass('open')
-        return false
-      })
-
     $('#preferences').
       on('click', function(){
         showPreferences()
@@ -895,8 +774,6 @@ function convertToSlug(Text)
           , profileCleared: "Profile cleared"
           , docSavedLocal: "Document saved locally"
           , docSavedServer: "Document saved on our server"
-          , docSavedDropbox: "Document saved on dropbox"
-          , dropboxImportNeeded: "Please import a file from dropbox first."
         },
         showMessage: function(msg,delay){
           

@@ -43,12 +43,11 @@
     <div class="container-fluid">
       <a class="brand" href="#">Spectrum</a>
 
-      <a href="#" id="someBtn"><i class="icon-download"></i>&nbsp;Post</a>
       <ul class="nav pull-right">
         <li class="dropdown">
           <a href="#" id="drop5" role="button" class="dropdown-toggle" data-toggle="dropdown">Utilities <b class="caret"></b></a>
           <ul class="dropdown-menu" role="menu" aria-labelledby="drop5">
-            <li><a tabindex="-1" href="#" id="show_html"><i class="icon-download"></i>&nbsp;Show HTML</a></li>
+            <li><a tabindex="-1" href="#" id="post"><i class="icon-download"></i>&nbsp;Post</a></li>
             <li><a tabindex="-1" href="#" id="reset"><i class="icon-refresh"></i>&nbsp;Reset Current Profile</a></li>
             <li><a tabindex="-1" href="#" id="autosave"><i class="icon-remove"></i>&nbsp;Disable Autosave</a></li>
             <li><a tabindex="-1" href="#" id="preferences"><i class="icon-cog"></i>&nbsp;Preferences</a></li>
@@ -97,9 +96,9 @@
 
   
   <div id="app_wrap" class="container-fluid">
-    <div id="editor"></div>
+    <div id="editor">{{content}}</div>
     <div id="filename">
-      <span contenteditable="true" placeholder="asdasd"></span>
+      <span contenteditable="true"></span>
     </div>
     <div id="preview" class="shadowbox"></div>
   </div> <!-- end #app_wrap -->
@@ -119,8 +118,8 @@
   <script src="/js/bootstrap.min.js"></script>
   <script src="/js/ace.js" type="text/javascript" charset="utf-8"></script>
   <script src="/js/mode-markdown.js" type="text/javascript" charset="utf-8"></script>
-  <script src="/js/showdown.js" type="text/javascript"></script>
-  <script src="/js/keymaster.js" type="text/javascript"></script>
+  <script src="/js/showdown.min.js" type="text/javascript"></script>
+  <script src="/js/keymaster.min.js" type="text/javascript"></script>
   <script src="/js/dillinger.js" type="text/javascript"></script>
 
 </body>

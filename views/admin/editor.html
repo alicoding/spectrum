@@ -116,14 +116,13 @@ var content = "<h1>Hello World</h1>
 <h1>wawe</h1>
 ";
 // var title = "{{title}}";
-editor.importFile('spectrum',content);
- $("#title").val(title);
-  // $.post('/post/edit/g',function(data){
-  //   console.log({{data.title}});
-  //   $("#title").val(data.title);
-  //    //Imports a file when the user clicks this button
 
-  // });
+
+  $.post('/post/edit/g',function(data){
+    alert("Sds")
+    console.log({{data}});
+    $("#title").val(data.title);
+  });
 
 
 </script>
