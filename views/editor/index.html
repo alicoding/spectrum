@@ -8,8 +8,8 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <link rel="stylesheet/less" href="../less/demo.less">
-    <script src="less-1.2.2.min.js"></script>
+    <link rel="stylesheet/less" href="/editor/demo.less">
+    <script src="/editor/less/less-1.2.2.min.js"></script>
     <style>
         body {
             background-color: White;
@@ -23,9 +23,9 @@
     <![endif]-->
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="bootstrap/js/bootstrap-transition.js"></script>
-    <script src="bootstrap/js/bootstrap-modal.js"></script>
-    <script src="bootstrap/js/bootstrap-tooltip.js"></script>
+    <script src="/editor/bootstrap/js/bootstrap-transition.js"></script>
+    <script src="/editor/bootstrap/js/bootstrap-modal.js"></script>
+    <script src="/editor/bootstrap/js/bootstrap-tooltip.js"></script>
     <script type="text/javascript" src="/js/Markdown.Converter.js"></script>
     <script type="text/javascript" src="/js/Markdown.Sanitizer.js"></script>
     <script type="text/javascript" src="/js/Markdown.Editor.js"></script>
@@ -53,50 +53,13 @@
 
     <div class="container">
         
-        <h1>PageDown-Bootstrap Demo Page</h1>
-        <p>This is a demo of the pagedown editor styled to match bootstrap.</p>
-        
-        <hr />
-
-        <h2>1. This is the basic editor</h2>
+      
         <div class="wmd-panel">
-            <div id="wmd-button-bar"></div>
-<textarea class="wmd-input" id="wmd-input">
-This is the *first* editor.
-------------------------------
-
-Just plain **Markdown**, except that the input is sanitized:
-
-<marquee>I'm the ghost from the past!</marquee>
-</textarea>
+          <input type="text" value="{{title}}" placeholder="Text input" id="title">
+        <div id="wmd-button-bar"></div>
+        <textarea class="wmd-input" id="wmd-input">{{content}}</textarea>
         </div>
         <div id="wmd-preview" class="wmd-panel wmd-preview"></div>
-        
-        <hr />
-
-        <h2>2. This is a custom editor</h2>
-        
-        <div class="wmd-panel">
-            <div id="wmd-button-bar-second"></div>
-<textarea class="wmd-input" id="wmd-input-second">
-This is the *second* editor.
-------------------------------
-
-It has a plugin hook registered that surrounds all words starting with the
-letter A with asterisks before doing the Markdown conversion. Another one gives bare links
-a nicer link text. User input isn't sanitized here:
-
-<marquee>I'm the ghost from the past!</marquee>
-
-http://google.com
-
-http://stackoverflow.com
-
-It also includes a help button.
-</textarea>
-        </div>
-        <div id="wmd-preview-second" class="wmd-panel wmd-preview"></div>
-
     </div> 
                     <button id="post">post</button>
 
@@ -106,22 +69,7 @@ It also includes a help button.
             // var converter1 = Markdown.getSanitizingConverter();
             var editor1 = new Markdown.Editor(converter1);
             editor1.run();
-            
-            var converter2 = new Markdown.Converter();
-
-            converter2.hooks.chain("preConversion", function (text) {
-                return text.replace(/\b(a\w*)/gi, "*$1*");
-            });
-
-            converter2.hooks.chain("plainLinkText", function (url) {
-                return "This is a link to " + url.replace(/^https?:\/\//, "");
-            });
-            
-            var help = function () { alert("Do you need help?"); }
-            
-            var editor2 = new Markdown.Editor(converter2, "-second", { handler: help });
-            
-            editor2.run();
+          
         })();
     </script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
@@ -129,10 +77,10 @@ It also includes a help button.
     <script>
         $("#post").click(function (){
 
-  var theContent = $('#wmd-input-second').val();
-  alert(theContent);
-   _title = "Hehehe"
-   // $('#title').val(),
+  var theContent = $('#wmd-input').val(),
+
+   _title = $('#title').val(),
+   
       _url = convertToSlug(_title.trim());
       if (!_title){
         return alert("Please enter the title");
@@ -144,7 +92,7 @@ It also includes a help button.
       var editPost = '{{editParam}}';
 
       if(!editPost) {
-        saveToServerAjaxCall('/new/post', {data:theContent,title:"testing232", url: "test11ss"}, function () {
+        saveToServerAjaxCall('/new/post', {data:theContent,title:_title, url: _url}, function () {
         resetProfile();
         });
       } else {
