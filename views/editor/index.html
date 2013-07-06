@@ -71,7 +71,6 @@
           
         })();
     </script>
-
     <script>
         $("#post").click(function (){
 
@@ -91,16 +90,13 @@
 
       if(!editPost) {
         saveToServerAjaxCall('/new/post', {data:theContent,title:_title, url: _url}, function () {
-        resetProfile();
         });
       } else {
         saveToServerAjaxCall('/edit/post', {data:theContent,title:_title,url:_url}, function () {
-                resetProfile();
         });
       }
 
 });
-
 
 function saveToServerAjaxCall(url, data, callback) {
 
@@ -124,20 +120,10 @@ function saveToServerAjaxCall(url, data, callback) {
       }
    },
     success: function (data) {
-      resetProfile();
       window.location.href = '/'+data.url;
     }
   });
 }
-
-    function resetProfile(){
-    // For some reason, clear() is not working in Chrome.
-    localStorage.clear()
-
-    // Now reload the page to start fresh
-    window.location.reload()
-//    Notifier.showMessage(Notifier.messages.profileCleared, 1400)
-  }
 
 function convertToSlug(Text)
 {
