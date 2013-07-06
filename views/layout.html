@@ -6,8 +6,177 @@
   {% block css %}
     <link href="/css/bootstrap.css" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/stylesheets/screen.css" rel="stylesheet" type="text/css">
     <link href="/css/bootstrap-responsive.min.css" rel="stylesheet">
+<style>
 
+.kwd{color:#93C763}
+02
+.com{color:#66747B}
+03
+.typ{color:#678CB1}
+04
+.lit{color:#FACD22}
+05
+.tag{color:#8AC763}
+06
+.atn{color:#E0E2E4}
+07
+.dec{color:purple}
+08
+pre.prettyprint{border:0 solid #888}
+09
+.prettyprint{background:#000}
+10
+li.L0,li.L1,li.L2,li.L3,li.L4,li.L5,li.L6,li.L7,li.L8,li.L9{color:#555;list-style-type:decimal}
+11
+li.L1,li.L3,li.L5,li.L7,li.L9{background:#111}
+12
+.str,.atv{color:#EC7600}
+13
+.pun,.pln{color:#F1F2F3}
+14
+.prettyprinted{word-wrap:break-word;background:#000;border-radius:10px}
+15
+@media print {
+16
+.com{color:#600;font-style:italic}
+17
+.typ{color:#404;font-weight:700}
+18
+.lit{color:#044}
+19
+.pun{color:#440}
+20
+.pln{color:#000}
+21
+.atn{color:#404}
+22
+.str,.atv{color:#060}
+23
+.kwd,.tag{color:#006;font-weight:700}
+24
+}
+
+/*
+ * Derived from einaros's Sons of Obsidian theme at
+ * http://studiostyl.es/schemes/son-of-obsidian by
+ * Alex Ford of CodeTunnel:
+ * http://CodeTunnel.com/blog/post/71/google-code-prettify-obsidian-theme
+ */
+
+.str
+{
+    color: #EC7600;
+}
+.kwd
+{
+    color: #93C763;
+}
+.com
+{
+    color: #66747B;
+}
+.typ
+{
+    color: #678CB1;
+}
+.lit
+{
+    color: #FACD22;
+}
+.pun
+{
+    color: #F1F2F3;
+}
+.pln
+{
+    color: #F1F2F3;
+}
+.tag
+{
+    color: #8AC763;
+}
+.atn
+{
+    color: #E0E2E4;
+}
+.atv
+{
+    color: #EC7600;
+}
+.dec
+{
+    color: purple;
+}
+pre.prettyprint
+{
+    border: 0px solid #888;
+}
+ol.linenums
+{
+    margin-top: 0;
+    margin-bottom: 0;
+}
+.prettyprint {
+    background: #000;
+}
+li.L0, li.L1, li.L2, li.L3, li.L4, li.L5, li.L6, li.L7, li.L8, li.L9
+{
+    color: #555;
+    list-style-type: decimal;
+}
+li.L1, li.L3, li.L5, li.L7, li.L9 {
+    background: #111;
+}
+@media print
+{
+    .str
+    {
+        color: #060;
+    }
+    .kwd
+    {
+        color: #006;
+        font-weight: bold;
+    }
+    .com
+    {
+        color: #600;
+        font-style: italic;
+    }
+    .typ
+    {
+        color: #404;
+        font-weight: bold;
+    }
+    .lit
+    {
+        color: #044;
+    }
+    .pun
+    {
+        color: #440;
+    }
+    .pln
+    {
+        color: #000;
+    }
+    .tag
+    {
+        color: #006;
+        font-weight: bold;
+    }
+    .atn
+    {
+        color: #404;
+    }
+    .atv
+    {
+        color: #060;
+    }
+}
+</style>
   {% endblock %}
 
 	{% block header %}
@@ -20,9 +189,18 @@
 
     {% block footer %}
 
-
     <script src="/ext/js/jquery.js"></script>
     <script src="/ext/js/bootstrap.min.js"></script>
+    <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+<script>
+  var prettify = function(){  
+    $('pre').addClass('prettyprint');
+
+  };
+
+    prettify();
+
+</script>
     {% endblock %}
 
 

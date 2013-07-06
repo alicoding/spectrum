@@ -1,10 +1,11 @@
 {% extends "layout.html" %}
 {% block title %}Home{% endblock %}
 {% block body %}
-  <h2>Title: {{ title }}</h2>
-  <h2>URL: {{url}}</h2>
-  <h2>Content: {{ content }}</h2>
-  <h2>email: {{ email }}</h2>
-  <h2>Author: {{ author }}</h2>
-  <h2>Posted On: {{ postedOn }}</h2>
+
+  <h2><a href="/{{url}}"> {{ title }} </a></h2>
+    <span>email: {{ email }}</span>
+  <span>Author: {{ author }}</span>
+  <span>Posted On: {{ postedOn }}</span>
+  {{ content }}
+
 {% endblock %}
