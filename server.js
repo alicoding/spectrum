@@ -10,7 +10,7 @@ var app           = express(),
     env           = require('./config/environment'),
     nunjucksEnv   = new nunjucks.Environment( new nunjucks.FileSystemLoader( path.join( __dirname, 'views' )));
     logger        = require('./lib/logger'),
-    middleware    = require('./lib/middleware')(ESsetup);
+    middleware    = require('./lib/middleware')(ESsetup, app);
 
 // Express Configuration
 app.configure( function() {
@@ -64,6 +64,7 @@ app.post('/setting/author/s', middleware.saveAuthorSetting);
 app.get('/new/post', route.index);
 // app.get('/new/post', route.pages('admin/editor'));
 app.post('/new/post', middleware.createPost);
+app.post('/edit/post', middleware.publishEditPost);
 
 //edit an existing post
 app.post('/post/edit/g', middleware.editPost);
@@ -71,6 +72,9 @@ app.post('/post/edit/g', middleware.editPost);
 
 // be careful with this route! it will delete all the data from elasticsearch
 app.get('/admin/delete/all', middleware.dropEScontent);
+
+//js file
+app.get('/js/dillinger.js', route.js('dillinger'));
 
 
 

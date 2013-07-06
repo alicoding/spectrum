@@ -1,5 +1,5 @@
 $(function(){
-  
+  console.log();
   var editor
     , converter
     , autoInterval
@@ -8,13 +8,13 @@ $(function(){
       {
         theme: 'ace/theme/idle_fingers'
       , showPaper: false
-      , currentMd: ''
+      , currentMd: '{{mdcontent}}'
       , autosave: 
         {
           enabled: true
         , interval: 3000 // might be too aggressive; don't want to block UI for large saves.
         }
-      , current_filename : ''
+      , current_filename : '{{mdtitle}}'
       }
 
   // Feature detect ish
@@ -652,9 +652,18 @@ $(function(){
       if(!theContent) {
         return alert("Please enter some content");
       }
-      saveToServerAjaxCall('/save', {data:theContent,title:_title,url:_url}, function () {
-    console.log('Data was saved to the database.');
-  });
+
+      var editPost = '{{editParam}}';
+
+      if(!editPost) {
+        saveToServerAjaxCall('/new/post', {data:theContent,title:_title,url:_url}, function () {
+
+        });
+      } else {
+        saveToServerAjaxCall('/edit/post', {data:theContent,title:_title,url:_url}, function () {
+
+        });
+      }
 
 });
 
@@ -665,7 +674,7 @@ function saveToServerAjaxCall(url, data, callback) {
     type: 'POST',
     data: JSON.stringify(data),
     contentType: 'application/json',
-    url: '/new/post',
+    url: url,
     statusCode: {
       200: function (response) {
 
