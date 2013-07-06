@@ -1,0 +1,76 @@
+/* incase an inverted custom gradient isn't specified */
+.fancy-button-reset-base-class, body #nav button { font-family: "Lucida Grande", Lucida, Arial, sans-serif; background: url('images/button_bg.png?1301554218') repeat-x bottom left; margin: 0; width: auto; overflow: visible; display: inline-block; cursor: pointer; text-decoration: none; border-style: solid; font-weight: bold; }
+.fancy-button-reset-base-class::-moz-focus-inner, body #nav button::-moz-focus-inner { border: none; padding: 0; }
+.fancy-button-reset-base-class:focus, body #nav button:focus { outline: none; }
+
+body { background-color: White; font-family: helvetica, verdana, arial, serif; background: #F9F9F9; margin: auto; width: 1175px; }
+body #editor { width: 570px; float: left; margin-rigth: 10px; }
+body #editor #title { width: 548px; border: 1px solid #efefef; margin: 10px 0; font-size: 2em; padding: 0 10px; }
+body #nav { margin: 20px 0 10px 26px; float: right; }
+body #nav button { -moz-border-radius: 6px; -webkit-border-radius: 6px; -o-border-radius: 6px; -ms-border-radius: 6px; -khtml-border-radius: 6px; border-radius: 6px; font-size: 18px; line-height: 1.2em; padding: 0.3em 1em; border-width: 1px; background-color: #bd0013; background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, color-stop(0%, #f27380), color-stop(10%, #ea1f34), color-stop(50%, #9f0f1d), color-stop(50%, #910d1b), color-stop(100%, #c01223)); background-image: -moz-linear-gradient(top, #f27380 0%, #ea1f34 10%, #9f0f1d 50%, #910d1b 50%, #c01223 100%); background-image: linear-gradient(top, #f27380 0%, #ea1f34 10%, #9f0f1d 50%, #910d1b 50%, #c01223 100%); border-color: #670a13; text-shadow: #3e0006 0px 1px 1px; -moz-box-shadow: rgba(255, 255, 255, 0.371) 0 0 0.1em 1px inset; -webkit-box-shadow: rgba(255, 255, 255, 0.371) 0 0 0.1em 1px inset; -o-box-shadow: rgba(255, 255, 255, 0.371) 0 0 0.1em 1px inset; box-shadow: rgba(255, 255, 255, 0.371) 0 0 0.1em 1px inset; -moz-background-clip: padding; -webkit-background-clip: padding; -o-background-clip: padding-box; -ms-background-clip: padding-box; -khtml-background-clip: padding-box; background-clip: padding-box; }
+body #nav button, body #nav button:visited { color: white; }
+body #nav button:hover, body #nav button:focus { background-color: #ae0012; background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, color-stop(0%, #f16573), color-stop(10%, #e5152a), color-stop(50%, #910d1b), color-stop(50%, #830c18), color-stop(100%, #b21021)); background-image: -moz-linear-gradient(top, #f16573 0%, #e5152a 10%, #910d1b 50%, #830c18 50%, #b21021 100%); background-image: linear-gradient(top, #f16573 0%, #e5152a 10%, #910d1b 50%, #830c18 50%, #b21021 100%); border-color: #590810; text-shadow: #2e0005 0px 1px 1px; }
+body #nav button:hover, body #nav button:hover:visited, body #nav button:focus, body #nav button:focus:visited { color: white; }
+body #nav button:active { background-color: #9e0010; background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, color-stop(0%, #910d1b), color-stop(30%, #9a0e1d), color-stop(50%, #880d19), color-stop(50%, #7a0b17), color-stop(100%, #b61122)); background-image: -moz-linear-gradient(top, #910d1b 0%, #9a0e1d 30%, #880d19 50%, #7a0b17 50%, #b61122 100%); background-image: linear-gradient(top, #910d1b 0%, #9a0e1d 30%, #880d19 50%, #7a0b17 50%, #b61122 100%); border-color: #4b070e; text-shadow: #1f0003 0px -1px -1px; -moz-box-shadow: #670a13 0 0.08em 0.1em 1px inset; -webkit-box-shadow: #670a13 0 0.08em 0.1em 1px inset; -o-box-shadow: #670a13 0 0.08em 0.1em 1px inset; box-shadow: #670a13 0 0.08em 0.1em 1px inset; }
+body #nav button:active, body #nav button:active:visited { color: white; }
+body #menu { margin: 10px auto; text-align: right; }
+body #footer { color: #B1B0B0; margin: 10px; text-align: center; font-size: 0.75em; float: left; width: 100%; }
+body pre { font-size: 13px; font-family: monospace; background-color: #000; -moz-border-radius: 8px; -webkit-border-radius: 8px; -o-border-radius: 8px; -ms-border-radius: 8px; -khtml-border-radius: 8px; border-radius: 8px; width: 95%; margin: 1em auto; padding: 1em; }
+body pre .str { color: #65B042; }
+body pre .kwd { color: #E28964; }
+body pre .com { color: #AEAEAE; font-style: italic; }
+body pre .typ { color: #89bdff; }
+body pre .lit { color: #3387CC; }
+body pre .pun { color: #fff; }
+body pre .pln { color: #fff; }
+body pre .tag { color: #89bdff; }
+body pre .atn { color: #bdb76b; }
+body pre .atv { color: #65B042; }
+body pre .dec { color: #3387CC; }
+
+div.grippie { background: #eeeeee url(../images/grippie.png) no-repeat scroll center 2px; border-color: #DDDDDD; border-style: solid; border-width: 0pt 1px 1px; cursor: s-resize; height: 9px; overflow: hidden; }
+
+#copy_md, #copy_html { display: inline-block; position: relative; }
+
+.wmd-panel { margin-left: 25%; margin-right: 25%; width: 50%; min-width: 500px; }
+
+#wmd-input { height: 600px; background-color: #FFFFFF; border: 1px solid #EFEFEF; width: 548px; font-family: verdana; font-size: 14px; padding: 10px; margin: auto; }
+
+#wmd-preview { width: 570px; float: left; margin-left: 25px; margin-top: 10px; font-size: 14px; }
+#wmd-preview img { border: 1px solid #BAB5B5; }
+#wmd-preview a { color: #AD1020; }
+#wmd-preview a:hover { color: #ec3749; }
+
+#wmd-output { width: 98%; background-color: #FFFFF1; border: 1px solid #FFF9C3; padding: 10px; margin-top: 10px; }
+
+/* sprite button slicing style information */
+#wmd-button-bar { width: 560px; background-color: #FEFEFE; border: 1px solid #EFEFEF; margin-bottom: 4px; padding: 4px; }
+#wmd-button-bar #wmd-button-row { position: relative; margin: 10px 5px 5px 5px; padding: 0px; height: 20px; background: #fff; }
+#wmd-button-bar #wmd-button-row .wmd-button { width: 20px; height: 20px; margin-left: 5px; margin-right: 5px; position: absolute; background: url(../images/wmd-buttons.png) no-repeat; display: inline-block; list-style: none; }
+#wmd-button-bar #wmd-button-row .wmd-spacer { width: 1px; height: 20px; margin-left: 14px; position: absolute; background-color: Silver; display: inline-block; list-style: none; }
+#wmd-button-bar #wmd-button-row #wmd-bold-button { left: 0px; background-position: 0px 0; }
+#wmd-button-bar #wmd-button-row #wmd-italic-button { left: 25px; background-position: -20px 0; }
+#wmd-button-bar #wmd-button-row #wmd-spacer1 { left: 50px; }
+#wmd-button-bar #wmd-button-row #wmd-link-button { left: 75px; background-position: -40px 0; }
+#wmd-button-bar #wmd-button-row #wmd-quote-button { left: 100px; background-position: -60px 0; }
+#wmd-button-bar #wmd-button-row #wmd-code-button { left: 125px; background-position: -80px 0; }
+#wmd-button-bar #wmd-button-row #wmd-image-button { left: 150px; background-position: -100px 0; }
+#wmd-button-bar #wmd-button-row #wmd-spacer2 { left: 175px; }
+#wmd-button-bar #wmd-button-row #wmd-olist-button { left: 200px; background-position: -120px 0; }
+#wmd-button-bar #wmd-button-row #wmd-ulist-button { left: 225px; background-position: -140px 0; }
+#wmd-button-bar #wmd-button-row #wmd-heading-button { left: 250px; background-position: -160px 0; }
+#wmd-button-bar #wmd-button-row #wmd-hr-button { left: 275px; background-position: -180px 0; }
+#wmd-button-bar #wmd-button-row #wmd-spacer3 { left: 300px; }
+#wmd-button-bar #wmd-button-row #wmd-undo-button { left: 325px; background-position: -200px 0; }
+#wmd-button-bar #wmd-button-row #wmd-redo-button { left: 350px; background-position: -220px 0; }
+#wmd-button-bar #wmd-button-row #wmd-help-button { right: 0px; display: none; background-position: -240px 0; }
+
+.wmd-prompt-background { background-color: Black; }
+
+.wmd-prompt-dialog { border: 1px solid #999999; background-color: #F5F5F5; }
+.wmd-prompt-dialog div { font-size: 0.8em; font-family: arial, helvetica, sans-serif; }
+.wmd-prompt-dialog form input[type="text"] { border: 1px solid #999999; color: black; }
+.wmd-prompt-dialog form input[type="button"] { border: 1px solid #888888; font-family: trebuchet MS, helvetica, sans-serif; font-size: 0.8em; font-weight: bold; }
+
+#wmd-output { display: none; }
+#wmd-output pre { white-space: pre-wrap; /* css-3 */ white-space: -moz-pre-wrap !important; /* Mozilla, since 1999 */ white-space: -pre-wrap; /* Opera 4-6 */ white-space: -o-pre-wrap; /* Opera 7 */ word-wrap: break-word; /* Internet Explorer 5.5+ */ }

@@ -1,29 +1,29 @@
 var ESsetup       = require('./config/ESconfig'),
-    express       = require( "express" ),
-    nunjucks      = require( "nunjucks" ),
-    path          = require( "path" ),
-    route         = require( "./routes" ),
+    express       = require('express'),
+    nunjucks      = require('nunjucks'),
+    path          = require('path'),
+    route         = require('./routes'),
     fs            = require('fs');
 
 
 var app           = express(),
     env           = require('./config/environment'),
-    nunjucksEnv   = new nunjucks.Environment( new nunjucks.FileSystemLoader( path.join( __dirname, 'views' )));
+    nunjucksEnv   = new nunjucks.Environment(new nunjucks.FileSystemLoader(path.join(__dirname, 'views'))),
     logger        = require('./lib/logger'),
     middleware    = require('./lib/middleware')(ESsetup, app);
 
 // Express Configuration
-app.configure( function() {
+app.configure(function () {
 
-  nunjucksEnv.express( app );
-  app.disable( "x-powered-by" );
+  nunjucksEnv.express(app);
+  app.disable('x-powered-by');
   app.use(express.logger('dev'));
-  app.use( express.compress() );
-  app.use( express.static( path.join( __dirname, "public" )));
+  app.use( express.compress());
+  app.use( express.static( path.join(__dirname, 'public')));
   app.use( express.bodyParser() );
 
   app.use( app.router );
-
+	
   app.use( function( err, req, res, next) {
     if ( !err.status ) {
       err.status = 500;

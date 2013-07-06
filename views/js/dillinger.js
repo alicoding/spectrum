@@ -1,6 +1,6 @@
 $(function(){
-  console.log();
-  var editor
+
+  var editor 
     , converter
     , autoInterval
     , paperImgPath = '/img/notebook_paper_200x200.gif'
@@ -8,7 +8,7 @@ $(function(){
       {
         theme: 'ace/theme/idle_fingers'
       , showPaper: false
-      , currentMd: '{{mdcontent}}'
+      , currentMd: ''
       , autosave: 
         {
           enabled: true
@@ -587,7 +587,7 @@ $(function(){
    * @return {Void}
    */  
   function bindPreview(){
-    $('#editor').bind('keyup', previewMd)
+    $('#sss').bind('keyup', previewMd)
   }
   
   /**
