@@ -126,14 +126,14 @@
 </html> -->
 
 
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html>
   <head>
-    <title>Markdown Live Editor</title>
+    <title>Markdown Live Editor</title> -->
     <!--[if IE]>
       <link href="stylesheets/ie6.css" rel="stylesheet" type="text/css">
     <![endif]-->
-    <link href="/stylesheets/screen.css" rel="stylesheet" type="text/css">
+<!--     <link href="/stylesheets/screen.css" rel="stylesheet" type="text/css">
   </head>
   <body>
     <div id="editor">
@@ -143,21 +143,108 @@
       <div id="nav">
         <button id="clear">Clear</button>
         <span id="copy_md">
-          <button id="copy_md_btn">Copy Markdown</button>
-        </span>
-        <span id="copy_html">
-          <button id="copy_html_btn">Copy HTML</button>
+          <button id="post">post</button>
         </span>
       </div>
     </div>
     <div id="wmd-preview"></div>
     <div id="wmd-output"></div>
     <div id="footer">
-      To learn more about markdown click
-      <a href="http://daringfireball.net/projects/markdown/">here</a>
-      <br>
-      <a href="http://www.jrmoran.com">-jaime</a>
     </div>
     <script language="javascript" src="/javascripts/lib.js" type="text/javascript"></script><script language="javascript" src="/javascripts/script.js" type="text/javascript"></script>
+  </body>
+</html>
+ -->
+
+
+<!DOCTYPE html>
+<html>
+  <body>
+    <textarea id="text-input" oninput="this.editor.update()"
+              rows="6" cols="60">{{mdcontent}}</textarea>
+    <div id="preview">{{mdcontent}} </div>
+    <script src="/javascripts/lib.js"></script>
+
+    <script>
+
+
+  $("#post").click(function (){
+
+  var theContent = $('#wmd-input').val(),
+   _title = $('#title').val(),
+      _url = convertToSlug(_title.trim());
+      if (!_title){
+        return alert("Please enter the title");
+      } 
+      if(!theContent) {
+        return alert("Please enter some content");
+      }
+
+      var editPost = '{{editParam}}';
+
+      if(!editPost) {
+        saveToServerAjaxCall('/new/post', {data:theContent,title:_title,url:_url}, function () {
+        resetProfile();
+        });
+      } else {
+        saveToServerAjaxCall('/edit/post', {data:theContent,title:_title,url:_url}, function () {
+        resetProfile();
+        });
+      }
+
+});
+
+
+function saveToServerAjaxCall(url, data, callback) {
+
+  $.ajax({
+    type: 'POST',
+    data: JSON.stringify(data),
+    contentType: 'application/json',
+    url: url,
+    statusCode: {
+      200: function (response) {
+
+      },
+      201: function (response) {
+
+      },
+      401: function (response) {
+
+      },
+      404: function (response) {
+
+      }
+   },
+    success: function (data) {
+      resetProfile();
+      window.location.href = '/'+data.url;
+    }
+  });
+}
+
+function convertToSlug(Text)
+{
+    return Text
+        .toLowerCase()
+        .replace(/ /g,' ')
+        .replace(/[^\w-]+/g,' ')
+        ;
+}
+
+
+
+      function Editor(input, preview) {
+        this.update = function () {
+          preview.innerHTML = markdown.toHTML(input.value);
+        };
+        input.editor = this;
+        this.update();
+      }
+      var $ = function (id) { return document.getElementById(id); };
+      new Editor($("text-input"), $("preview"));
+    </script>
+          <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js" type="text/javascript"></script>
+
   </body>
 </html>
