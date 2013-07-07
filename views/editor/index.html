@@ -66,9 +66,11 @@
     <script type="text/javascript">
         (function () {
             var converter = new Markdown.Converter();
-            var editor = new Markdown.Editor(converter);
+            function help () { 
+              window.open('http://daringfireball.net/projects/markdown/syntax'); 
+            }
+            var editor = new Markdown.Editor(converter, '', { handler: help });
             editor.run();
-          
         })();
     </script>
     <script>

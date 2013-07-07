@@ -1,0 +1,1728 @@
+WEBVTT
+
+00:00.000 --> 00:03.000
+<v Kyle Huey> Not ready yet? Alright, I'll wait until the camera man tells me we're good.
+
+00:04.000 --> 00:05.000
+<v Chris Pearce> Okay, we're good now.</v>
+<v Kyle Huey> Oh, now we're good?</v>
+<i>Laughter</i>
+
+00:06.000 --> 00:15.000
+<v Kyle Huey> So thanks again for <u>coming</u>. I'm going to talk a bit about the cycle collector and what it does and how we manage memory in Gecko.
+
+00:16.000 --> 00:19.000
+<v Kyle Huey> And hopefully, answer questions that you all have about that.
+
+00:20.000 --> 00:24.000
+<v Kyle Huey> And hopefully people leave here with a better understanding about how it works and how to use it.
+
+00:25.000 --> 00:33.000
+<v Kyle Huey> So the <b>cyle collector</b> does three main things.
+
+00:34.000 --> 00:43.000
+<v Kyle Huey> So the first thing it does... no it probably doesn't do that.
+
+00:44.000 --> 00:48.000
+<v Kyle Huey> So the first thing that the <b>cycle collector</b> does is that it collects garbage C++ cycles.
+
+00:56.000 --> 01:00.000
+<v Kyle Huey> Hopefully, you can read my terrible hand writing, and hopefully, this doesn't fall down half way through.
+
+01:02.000 --> 01:08.000
+<v Kyle Huey> So as most of you probably know, for most objects in Gecko we use <u>reference counting</u>.
+
+01:09.000 --> 01:15.000
+<v Kyle Huey> To keep track of lifetimes and what not, and so, one situation you could end up with in reference counting is something like
+
+01:18.000 --> 01:23.000
+<v Kyle Huey> A owns a reference to B and B owns a reference to A.
+
+01:25.000 --> 01:31.000
+<v Kyle Huey> And so if you never do anything else, both of these will always have a reference count of 1, and you will leak memory... and that's bad.
+
+01:32.000 --> 01:35.000
+<v Kyle Huey> So that's the first thing the <b>cycle collector</b> gives us.
+
+01:36.000 --> 01:48.000
+<v Kyle Huey> The second thing the cycle collector deals with is cycles between C++ and Javascript.
+
+01:49.000 --> 02:00.000
+<v Kyle Huey> So for example if your working on DOM objects or anything that's exposed to Javascript...
+
+02:01.000 --> 02:12.000
+<v Kyle Huey> If you have the C++ side over here and the Javascript side over here you might have a cycle that looks like this.
+
+02:26.000 --> 02:28.000
+<v Kyle Huey> So maybe you have a cycle between some C++ objects and their JS reflections.
+
+02:29.000 --> 02:33.000
+<v Kyle Huey> And so the cycle collector also helps take care of these things.
+
+02:34.000 --> 02:43.000
+<v Kyle Huey> And the third thing the cycle collector does -- and technically this doesn't happen in the cycle collector right now, but in about two weeks it will...
+
+02:44.000 --> 02:50.000
+<v Kyle Huey> Is it allows you to own Javascript objects.
+
+02:55.000 --> 03:00.000
+<v Kyle Huey> So if you have...
+
+03:02.000 --> 03:13.000
+<v Kyle Huey> In any case where you have a C++ object that has an owning reference to Javascript that's implemented in the cycle collector.
+
+03:14.000 --> 03:18.000
+<v Kyle Huey> Or with the cycle collector machinery is a more accurate way to say it.
+
+03:19.000 --> 03:22.000
+<v Kyle Huey> So those are the three things the cycle collector does.
+
+03:23.000 --> 03:31.000
+<v Kyle Huey> So originally we wrote it for the first two, but over time we merged in the third because that used to be handled in XPConnect
+
+03:32.000 -->03:37.000
+<v Kyle Huey> And it made more sense to handle it at the intersection of XPConnect and the cycle collector.
+
+03:38.000 --> 03:42.000
+<v Kyle Huey> It's all really complicated, but hopefully we will skip over all the complicated details.
+
+03:43.000 --> 03:46.000
+<v Kyle Huey> So that's the basic idea!
+
+03:47.000 --> 03:55.000
+<v Kyle Huey> And the way this works is that C++ classes opt-in to cycle collection.
+
+03:56.000 --> 03:58.000
+<v Kyle Huey> I'm going to erase this now.
+
+04:01.000 --> 04:03.000
+<v Kyle Huey> Yeah, hopefully I don't knock this over.
+
+04:11.000 --> 04:16.000
+<v Kyle Huey> So! C++ classes opt-in to cycle collection.
+
+04:17.000 --> 04:26.000
+<v Kyle Huey> So unlike when when you write an object in Javascript or code in Javascript everything participates in garbage collection and there's nothing you have to do, everything just works
+
+04:27.000 --> 04:35.000
+<v Kyle Huey> In C++ you have to implement special stuff to make your class work in cycle collection.
+
+04:36.000 --> 04:40.000
+<v Kyle Huey> So the way you end up doing that for more objects is you do three things:
+
+04:41.000 --> 04:46.000
+<v Kyle Huey> First of all you change the reference counting macros
+
+04:47.000 --> 04:50.000
+<v Kyle Huey> So there's like.. well I hope you've all seen things like NS_IMPL_ADDREF and NS_IMPL_RELEASE and what not
+
+04:51.000 --> 04:57.000
+<v Kyle Huey> So there's also versions of that for cycle collection -- NS_IMPL_CYCLE_COLLECTED_ADDREF and NS_IMPL_CYCLE_COLLECTED_RELEASE
+
+04:58.000 --> 05:05.000
+<v Kyle Huey> So those two macros generate different add ref and release methods.
+
+05:06.000 --> 05:08.000
+<v Kyle Huey> And the code in there tells the cycle collector what's going on.
+
+05:09.000 --> 05:15.000
+<v Kyle Huey> So the cycle collector knows -- "Okay this object might be garbage I need to look at it later, this object might not be garbage, so I don't need to worry about it."
+
+05:16.000 --> 05:20.000
+<v Kyle Huey> So that's the first thing -- you change the add ref and release methods.
+
+05:21.000 --> 05:24.000
+<v Kyle Huey> The second thing you do is you implement what we call "cycle collection participant"
+
+05:25.000 --> 05:29.000
+<v Kyle Huey> Which is basically just a helper class, most of which is hidden behind macros
+
+05:30.000 --> 05:47.000
+<v Kyle Huey> And that helper class tells the cycle collector what references are leaving your objects and also helps the cycle collector git rid of them when it wants to clean up a garbage cycle
+
+05:48.000 --> 05:56.000
+<v Kyle Huey> The third thing you do is you change the query interface macros for the class to return that cycle collection participant
+
+05:57.000 --> 06:04.000
+<v Kyle Huey> So the first and third part aren't that interesting, they're pretty simple, so I'm going to spend a decent amount of time talking about the second one.\
+
+06:05.000 --> 06:13.000
+<v Kyle Huey> So cycle collection classes implement a cycle collection participant
+
+06:20.000 --> 06:27.000
+<v Kyle Huey> And the cycle collection participant implements three methods, it really implements more than that, but there are three really interesting ones
+
+06:28.000 --> 06:38.000
+<v Kyle Huey> The first one is traverse, the second one is trace, and the third one is unlink.
+
+06:42.000 --> 06:51.000
+<v Kyle Huey> So, again, there are macros that sort of cover up a lot of the complexity here, but the basic idea is that in traverse
+
+06:52.000 --> 06:58.000
+<v Kyle Huey> your object is going to tell the cycle collector all of the owning references that it point to other C++ objects
+
+06:59.000 --> 07:09.00
+<v Kyle Huey> So if your object has an ns com pointer variable, this is where you are going to tell the cycle collector about it. If you have an array of them you are going to tell it about them, etc.
+
+07:10.000 --> 07:15.000
+<v Kyle Huey> In trace, which is optional, you tell the cycle collector about all your owning references to Javascript
+
+07:16.000 --> 07:27.000
+<v Kyle Huey> So if your object, for example, has a JS object pointer, or a pointer to a raw Javascrip string
+
+07:28.000 --> 07:30.000
+<v Kyle Huey> Yep?
+<v Chris Pearce> K, can you wait?
+Yeah, we need to change the SD card? Sorry!
+
+07:31.000 --> 07:33.000
+<i>Laughter</i>
+
+07:48.000 -->  07:50.000
+<v Kyle Huey> Alright we're good? Alright.
+
+07:51.000 --> 07:54.000
+<v Kyle Huey> I don't really remember where I was so I'll start from trace cyclage.
+
+07:55.000 --> 08:00.000
+<v Kyle Huey> So like traverse, you tell the cycle collector of all your outgoing C++ edges
+
+08:01.000 --> 08:04.000
+<v Kyle Huey> In trace your going to tell it about all of your outgoing Javascript edges.
+
+08:05.000 --> 08:12.000
+<v Kyle Huey> And that gets called when we end up running the Javascript garbage collector to tell it "Hey we're still really holding these edges"
+
+08:13.000 --> 08:17.000
+<v Kyle Huey> And the third method is unlink which means "break the cycle"
+
+08:18.000 --> 08:24.000
+<v Kyle Huey> And that's intentionally kind of vague. Usually that means that all these references that you told the cycle collector about to get rid of them.
+
+08:25.000 --> 08:29.000
+<v Kyle Huey> So if you have ns com pointers you fill them with null. If your holding Javascript objects you stop holding them.
+
+08:30.000 --> 08:36.000
+<v Kyle Huey> In certain cases you don't get rid of of all of them, you may get rid of just enough of them to break the cycle.
+
+08:37.000 --> 08:42.000
+<v Kyle Huey> And we do that in certain places where, for example, we want to make sure that a given thing is never null
+
+08:43.000 --> 08:46.000
+<v Kyle Huey> So... but, that's not really super important.
+
+08:47.000 --> 08:51.000
+<v Kyle Huey> So if you have...
+
+08:56.000 --> 08:58.000
+<v Kyle Huey> It was working earlier.
+
+09:16.000 --> 09:29.000
+<v Kyle Huey> So if you have a graph that looks something like this -- so if A owns references to A prime and B and C then the traverse collector for A is going to tell the cycle collector about B and C
+
+09:30.000 --> 09:34.000
+<v Kyle Huey> And the trace method for A is going to tell the cycle collector about A prime
+
+09:35.000 --> 09:38.000
+<v Kyle Huey> And the unlink method is going to make all those arrows go away... it's going to null out those pointers
+
+09:40.000 --> 09:45.000
+<v Kyle Huey> So that's the basic idea. Does everyone understand what I mean when I say "owns a reference to?"
+
+09:46.000 --> 09:48.000
+<v Kyle Huey> Does anybody not get that? ... Okay
+
+09:49.000 --> 09:50.000
+<v Jet> Does it have to occur in that order? Traverse?
+
+09:51.000 --> 09:53.000
+<v Kyle Huey> No it can occur in any order
+
+09:54.000 --> 10:03.000
+<v Kyle Huey> So like traverse has to tell it about B and C it can't tell it about A prim, but when your unlinking, that can occur in any order.
+
+10:04.000 --> 10:09.000
+<v Ralph> So a strong reference is a ref pointer? It's something that's ref counted right?
+
+10:10.000 --> 10:14.000
+<v Kyle> So in C++ it means if you have a com pointer or a ref pointer or something like that.
+
+10:15.000 --> 10:17.000
+<v Ralph> But not a weak pointer or a raw pointer
+
+10:18.000 --> 10:23.000
+<v Kyle> Right, not an ns weak pointer and like a whatever star
+
+10:24.000 --> 10:30.000
+<v Kyle> Unless you add refed and released that star, but usually you don't do that because smart pointers are useful and keep you from screwing up.
+
+10:31.000 --> 10:44.000
+<v Kyle> It is techincally possible for C++ to have weak references to Javascript, but it's hard
+
+10:45.000 --> 10:52.000
+<v Kyle> Usually when you have a reference to Javascript, which you don't need to implement all that often, it's a strong refence
+
+10:53.000 --> 10:59.000
+<v Kyle> and then all references in Javasctip, unless there in like a weak map or something weird like that, are strong references.
+
+11:02.000 --> 11:08.000
+When you are saying A prime there, do you mean if you just have a JS object or something like that?
+
+11:09.000 --> 11:14.000
+<v Kyle> So I use A prime because I was thinking of the case where this is the wrapper for A
+
+11:15.000 --> 11:18.000
+<v Kyle> So by wrapper I mean this is the Javascript object that is a reflection of this
+
+11:19.000 --> 11:26.000
+<v Kyle> So this is an nsDOMNode and this is the objet that the Javascript sees
+
+11:27.000 --> 11:34.000
+<v Kyle> But it could be anything. It coule be like an XML HTTP request's n result array buffer, whatever that's called
+
+11:35.000 --> 11:44.000
+<v Kyle> So it could be... I mean, there's no reason there couldn't be something D, that's just how I drew it
+
+11:45.000 --> 11:50.000
+And you don't have to do anything special, say, if XP connect is doing things for you?
+
+11:51.000 --> 11:54.000
+<v Kyle> No, so most of that will be handled for you.
+
+11:55.000 --> 12:05.000
+<v Kyle> So one of the nice things about this mechanism is that if you inherit from a call that does what it needs to do, you don't need to duplicate that work, it just works.
+
+12:06.000 --> 12:10.000
+<v Kyle> And all the cycle collection macros have inherited version and we'll get to that.
+
+12:14.000 --> 12:25.000
+<v Scott> What happens if you were to add something new? Would you have to override the trace, unlink, and traverse?
+
+12:27.000 -->12:28.000
+<v Kyle> I'm sorry can you repeat the question?
+
+12:29.000 --> 12:35.000
+<v Scott> So lets say you have... So you said if you inherit from something that already does what it's supposed to do
+
+12:36.000 -->  12:38.000
+<v Scott> But you add additional references...
+
+12:39.000 --> 12:46.000
+<v Kyle> Right then you need to implement the stuff and then forward the rest of it to the inherited class.
+
+12:47.000 --> 12:51.000
+<v Kyle> And this will make more sense when we look at the macros in depth.
+
+13:00.000 --> 13:10.000
+<v Kyle> So, now that I've explained sort of what the functions you implement look like I think it would help to explain a little bit about how the cycle collector works.
+
+13:11.000 --> 13:21.000
+<v Kyle> So the basic idea is that, as I mentioned earlier you have to change you reference counting macros in order to tell the cycle collector about you class.
+
+13:22.000 --> 13:36.000
+<v Kyle> And then the way those actual macros work is that any time that you call release on a cycle collected object, so if you have an ns com pointer with a cycle collected class in it and then you set it to null, that's going to call release internally.
+
+13:37.000 --> 13:44.000
+<v Kyle> When you call release on a cycle collected object that's going to add it to a giant list of things that the cycle collector is going to look at the next time it wakes up.
+
+13:45.000 --> 14:00.000
+<v Kyle> And we call that list the purple buffer because there is in the cycle collector, if you read the paper, which you don't really need to do, there are various colours assigned to different states
+
+14:01.000 --> 14:06.000
+<v Kyle> So say for example, things that are known to be garbage are black, or sorry, things that are known to be alive are black, things that are known to be garbage are white.
+
+14:07.000 --> 14:15.000
+<v Kyle> So these things that you need to look at are purple in the paper so the things that are in the purple buffer is just a buffer of things that are purpler, or a buffer of things that the next time the cycle collector wakes up it's going to look at.
+
+14:16.000 --> 14:19.000
+<v Kyle> and it's going to try to figure out if they're garbage.
+
+14:20.000 --> 14:31.000
+<v Kyle> So then when the cycle collector wakes up it's going to look at the purple buffer, it's going to look at every single object in it, and it's going to call traverse on them.
+
+14:32.000 --> 14:38.000
+<v Kyle> And then it's going to say "tell me about the objects you know about" and then it's going to call traverse on all of those objects and all of those objects.
+
+14:39.000 --> 14:43.000
+<v Kyle> And it's going to build up a picture of the graph.
+
+14:44.000 --> 14:54.000
+<v Kyle> And then the cycle collector trys to determine if it's a cycle or not. If it is a cycle and there are not objects outside of it that it knows about then it's garbage.
+
+14:55.000 --> 15:00.000
+<v Kyle> and it will call unlink on everything in the cycle.
+
+15:01.000 --> 15:05.000
+<v Kyle> And that should break the cycles and allow all those reflected things to be collected. So that's the very basic idea. Yeah?
+
+15:06.000 --> 05:12.000
+<v Daniel> When you say that there are no referenes outside that it doesn't know about, your talking about just lookin at the counts? It doesn't actually know about all the global references?
+
+15:13.000 --> 15:21.000
+<v Kyle> Yeah, so the cycle collector only knows about things that opt-int to cycle collection. So if there are references from somewhere outside of that then it doesn't know about that.
+
+15:22.000 --> 15:31.000
+<v Kyle> So for example, if there is an ns com pointer on the stack that holds a reference to a cycle collected object, the cycle collector doesn't know anything about the stack.
+
+15:32.000 --> 15:40.000
+<v Kyle> And that's very intentional. So in that case you have an object graph that's going to look something like... here I'll make it very simple.
+
+15:42.000 --> 15:51.000
+<v Kyle> So you have a cycle here where these own references to eachother, but maybe on the stack somewhere you have a reference to A
+
+15:52.000 --> 15:59.000
+<v Kyle> In this case as far as the cycle collector is concerned this comes from somewhere that it doesn't know about and this is not garbage because it's still being used.
+
+16:00.000 --> 16:02.000
+And that's because it sees a count of 2 on A?
+
+16:03.000 --> 16:14.000
+<v Kyle> Yeah, so A is going to tell it "I have a reference count of 2" and B has a reference count of 1 and then the cycle collector is going to look at it and say "Okay, there's one reference I know about coming into B" so this is really 0.
+
+16:15.000 --> 16:23.000
+<v Kyle> And there's one reference I know about going into A so this is really one and since everything it knows about does not have a reference count of 1, it's garbage.
+
+16:24.000 --> 16:30.000
+<v Kyle> And this is an example of why your running code doesn't get the feet kicked out from under it.
+
+16:31.000 --> 16:34.000
+<v Kyle> So that's a very simple example
+
+16:35.000 --> 16:49.000
+<v Kyle> But some examples of things that don't participate in cycle collection are the network machinery. So if you have objects that are held alive by Necko, the networking code, they're not going to be cycle collected while that happens.
+
+16:50.000 --> 17:04.000
+<v Kyle> And so, Necko holds references to objects that are going to say, the result of the network request. So while there's an ongoing network activty, for example an XHR can't be cycle collected. 
+
+
+17:05.000 --> 17:10.000
+<v Kyle> Because code it doesn't know about, mainly Necko, is still going to be holding a reference to it.
+
+17:13.000 --> 17:15.000
+<v Kyle> Any other questions at this point?
+
+17:16.000 --> 17:29.000
+<v Jet> So just another question for the folks. So all the cycle collected objects opt-in to cycle collection and the get traced when they get the ref count minus minused, but don't get to 0?
+
+17:30.000 --> 17:39.000
+<v Kyle> Right, right, so I didn't mention this earlier, but we do do an optimization where if the reference count goes to 0 it's going to be deleted immediately, the cycle collector doesn't need to look at it.
+
+17:40.000 --> 17:53.000
+<v Kyle> So I imagine that there are instances where that's a bad idea to opt-in to cycle collection because it will take forever when you know that your lifetime is longer then what should be cycle collected. Can you give some examples of when that is?
+
+17:54.000 --> 17:57.000
+<v Kyle> Yeah, so, alright. So what Jet is pointing out is...
+
+18:02.000 --> 18:07.000
+<v Kyle> So what Jet is pointing out is is everytime you call release on a cycle collected object we're going to add it to this list of things that we're going to need to look at.
+
+18:08.000 --> 18:20.000
+<v Kyle> And if it's not actually garbage we're going to spend a lot of time traversing it, looking at every node in the graph, and doing the reference count subtraction and all that only to find out it's not garbage.
+
+18:21.000 --> 18:29.000
+<v Kyle> And if you release it all the time, maybe you call add ref and release on it every millisecond, because you feel like it, that's going to slow down the cycle collection a lot.
+
+18:32.000 --> 18:35.000
+<v Daniel> I think the black clips actually anchor it in place.
+
+18:36.000 --> 18:40.000
+<v Kyle> Yeah, they don't actually work. Dave and I were trying to figure it out earlier and we didn't succeed.
+
+18:41.000 --> 18:43.000
+<v Kyle> So the, what was I saying?
+
+18:44.000 --> 18:46.000
+<v Daniel> Add ref and release every millisecond.
+
+18:47.000 --> 18:55.000
+<v Kyle> Oh yeah! So there are two ways to deal with this. The first is that you shouldn't add ref and release more then you need to. 
+
+18:56.000 --> 19:01.000
+<v Kyle> So holding strong references just for the heck of it is a waste of performance and time.
+
+19:02.000 --> 19:17.000
+<v Kyle> So if there is a case where you know that something else is holding this object alive then maybe you don't need to hold a strong reference to it, but you have to balance that with what if that could change at some time and this does now need to be a strong reference and nobody remembered to update it and now you have a security bug.
+
+19:18.000 --> 19:27.000
+<v Kyle> So cycle collection and garbage collection in general make software easier to develop at the cost of some runtime complexity.
+
+19:28.000 --> 19:34.000
+<v Kyle> And it's important to, like, you shouldn't try to avoid all the runtime cost if it's going to make the code impossible to maintain.
+
+19:35.000 --> 19:39.000
+<v Kyle> So, yeah, the first way to improve performance is to not do unecessary add reffing and releasing.
+
+19:40.000 --> 19:51.000
+<v Kyle> The second way, and you will probably never have to worry about this, but the second way is that Olli implemented, basically a bunch of performance optimizations
+
+19:52.000 --> 19:59.000
+<v Kyle> where in addition to those traverse, trace, and unlink functions, you can also implement some other functions that let you short circuit the cycle collector.
+
+20:00.000 --> 20:13.000
+<v Kyle> So, for example, if we have a node that is in the list of things to look at and that node is in the document of, say the [tap?] we're looking at, we know it's not garbage because it's part of what the user is looking at.
+
+20:14.000 --> 20:32.000
+<v Kyle> And so in this function the nodes check to see if "Hey am I in this document" and if they are they just say "Please don't look at me". So it's called...
+
+20:35.000 --> 20:37.000
+<v Kyle> I have to check for this...
+
+20:38.000 -->  20:42.000
+<v Kyle> Yeah so we have a variety of what we call "can skip functions"
+
+20:45.000 --> 20:48.000
+<v Kyle> and so basically the idea is that these just return a boolean that says whether you can skip them or not
+
+20:53.000 --> 20:56.000
+A K.
+<v Kyle> What? Oh yes, that does need another line.
+
+20:57.000 --> 21:09.000
+<v Kyle> Ah, so these just tell -- so when the cycle collector starts now it looks at everything in the purple buffer and it's asks "Can I skip you? Can I skip you? Can I skip you? Can I skip you?" and if it answers yes then it just removes it from the list.
+
+21:10.000 --> 21:15.000
+<v Kyle> So for code that you have to implement this probably won't be an issue
+
+21:16.000 --> 21:32.000
+<v Kyle> For things like DOM nodes for example, we saw a lot of performance benefit for doing things like this, but it's certainly an optimization you shouldn't start out trying to implement all this stuff. If there is a problem down the line then this is a mechanism we can use to speed things up.
+
+21:33.000 --> 21:48.000
+<v Kyle> And then Andrew McCreight is also working on making cycle collection incremental so that the impact of traversing all of that won't be as bad on performance as it is today.
+
+21:58.000 --> 22:00.000
+<v Kyle> Alright 
+
+22:01.000 --> 22:03.000
+Can I add it back to release if it's been skipped at first?
+
+22:04.000 --> 22:19.000
+<v Kyle> No. So, if your saying that you can skip it your saying that that release that was called earlier was not enough to make me garbage.
+
+22:20.000 --> 22:24.000
+<v Kyle> So the way that it gets added back to the list later is if something releases it again.
+
+22:28.000 --> 22:31.000
+<v Kyle> We have different heuristics for different things.
+
+22:33.000 --> 22:41.000
+<v Kyle> So it can get added to the list again later if something else calls release on it, yep. 
+
+22:45.000 --> 22:50.000
+<v Kyle> Alright, so the next thing I wanted to talked about is how it interacts with the garbage collector.
+
+22:54.000 --> 23:05.000
+<v Kyle> So the Javascript garbage collector is very different from the cycle collector because in the cycle collector everything is opt-in and if you don't do it the worse that happens is that you leak. 
+
+23:07.000 --> 23:14.000
+<v Kyle> The Javascript collector is mostley precise, except for stack scanning, but they're fixing that, it's a precise garabge collector.
+
+23:15.000 --> 23:29.000
+<v Kyle> So if you forget to tell the Javascript garbage collector about things it will delete them and then you will crash and generally in ways that are exploitable, which we don't like. So try not to do that.
+<i>Laughter</i>
+
+23:30.000 --> 23:40.000
+<v Kyle>  So that trace method that I was talking about earlier is how C++ objects can tell the Javascript engine about Javascript objects that they are holding alive.
+
+23:41.000 --> 23:46.000
+<v Kyle> So lets say you have something that looks like this...
+
+24:28.000 --> 24:32.000
+<v Kyle> Alright, so let's just say you have something that looks like this.
+
+24:33.000 --> 24:44.000
+<v Kyle> So here A is holding alive it's wrapper A prime which has some properties attached to it which ends up holding alive this other C++ object.
+
+24:45.000 --> 25:02.000
+<v Kyle> So here if you forget tell the cycle collector, and by extension the garbage collector, about this edge then the garbage collector will see that this is not owned by anything and it will delete all of this which will end up deleting that.
+
+25:03.000 --> 25:08.000
+<v Kyle> And so you'll have all these things that you will expect to be around which it will get rid of.
+
+25:09.000 --> 25:15.000
+<v Daniel> So what would be an example where A would hold onto A prime? Usually it's the reverse.
+
+25:16.000 --> 25:30.000
+<v Kyle> Yeah, so usually the Javascript wrapper owns the C++ object. The case where, so actually this should really always look like this, it should really go that way.
+
+25:31.000 --> 25:46.000
+<v Kyle> And then sometimes it might go that way and there is an owning reference that way when if the wrapper gets garbage collected and then we're asked to regenerate it later
+
+25:47.000 --> 25:59.000
+<v Kyle> We couldn't regenerate it exactly and so the situation this happens in is, let's say you have a tree of DOM nodes, and you do document.getElementById("foo")
+
+26:00.000 --> 26:17.000
+<v Kyle> and you get some element in the tree and then you set that element.whatever is 7. Alright, so you set some, what we call an exapndo property, which means it's not apart of HTML it's just a property on the Javascript object -- you set that on the wrapper.
+
+26:18.000 --> 26:30.000
+<v Kyle> And then the variable that's holding a reference to that variable goes out of scope, or whatever. So if the garbage collector ran and saw that the wrapper is no longer being used by anything
+
+26:31.000 --> 26:40.000
+<v Kyle> Therefore, I can garbage collect it and then something else does document.getElementBy foo ID again, that property that you just set would be gone.
+
+26:42.000 --> 26:45.000
+<v Kyle> And so that garbage collection would be observable.
+
+26:46.000 --> 26:58.000
+<v Kyle> So if Javascript modifies the wrapper we end up preserving it. Which means that we end up making this a string edge. So that's what has to happen.
+
+26:59.000 --> 27:06.000
+<v Kyle> So that complexity all gets handled internally by whatever it is that you are inheriting from
+
+27:07.000 --> 27:22.000
+<v Kyle> If you are implementing a DOM node it gets inherited from some of those super classes. If you are implemeting other stuff it gets implemented by nsWrapperCache or some other class that deals with the complexity.
+
+27:23.000 --> 27:32.000
+<v Kyle> So usually you don't have to worry about too much, but I'll give some more examples later for situations where that is relvant.
+
+27:33.000 --> 27:43.000
+<v Kyle> But on the other hand if you have something that is not a wrapper, let's say that your class here has a method that returns an array buffer
+
+27:44.000 --> 27:55.000
+<v Kyle> and your not holding like a C++ array, but you are holding an actualy Javascript array buffer object, then you absolutely have to have a strong edge.
+
+28:00.000 --> 28:09.000
+<v Kyle> Because otherwise you can't rely on anything else holding that alive and it might get garbage collected out from underneath you.
+
+28:10.000 --> 28:28.000
+<v Kyle> So what ends up happening here is that when the Javascript GC runs one of the steps it does is it goes over here and asks the cycle collector "Please trace everything you have that says it has Javascript to look at"
+
+28:29.000 --> 28:36.000
+<v Kyle> And the cycle collector will go through it's list and call trace on every single thing.
+
+28:37.000 --> 28:42.000
+<v Kyle> And so the cycle collector actually maintains -- so, this list of things it traces is separate from the purple buffer
+
+28:43.000 --> 28:47.000
+<v Kyle> It's not the same list. It maintains a separate list of things that have said they have Javascript to collect
+
+28:48.000 --> 29:00.000
+<v Kyle> and that's things that call, there's a macro for it, I think it's something like NS_HOLD_JS_OBJECTS
+
+29:05.000 --> 29:07.000
+<v Kyle> And drop...
+
+29:10.000 --> 29:23.000
+<v Kyle> So, things that hold references to Javacript call these macros and that adds them to the cycle collector's list of things that need to be traced everytime the Javascript garbage collector runs
+
+29:24.000 --> 29:28.000
+<v Kyle> and then if you call drop it removes you from that list.
+
+29:29.000 --> 29:33.000
+<v Kyle> So that's the basic overview of how it works.
+
+29:35.000 --> 29:38.000
+<v Kyle> Alright, are there any questions about that?
+
+29:42.000 --> 29:57.000
+<v Kyle> Okay, alright, I want to explain how the cycle collector actually breaks cross language cycles and then I think I will go through the macros and answer any random questions.
+
+30:43.000 --> 30:54.000
+<v Kyle> Okay, so let's say you have something like this. You have some DOM object, a Node or whatever, it doesn't matter, that has a bi-directional relationship with it's wrapper. 
+
+30:55.000 --> 31:01.000
+<v Kyle> So here you have a wrapper that owns the native object like it always does and is also owned by the native object because it is being preserved for whatever reason.
+
+31:02.000 --> 31:14.000
+<v Kyle> And this object has some Javascript properties on it. One of which is a native object here that owns a reference to A.
+
+31:15.000 --> 31:20.000
+<v Kyle> This isn't a particularly complicated graph, but it's good enough for our purposes.
+
+31:21.000 --> 31:34.000
+<v Kyle> So one thing you may notice is that this is in fact a cycle and if we don't do anything special there is no way that this ever going to get broken.
+
+31:35.000 --> 31:51.000
+<v Kyle> So let's say that there was one reference to A from the stack, so this was the reference from outside of the cycle and then that reference goes away.
+
+31:55.000 --> 32:02.000
+<v Kyle> So at that point, A because we just called release on it is going to get added to the cycle collector's purple buffer -- it's going to get added to the list of things that we need to look at.
+
+32:03.000 --> 32:11.000
+<v Kyle> And then the next time the cycle collector wakes up it's going to look at A and it's going to ask A what it knows about.
+
+32:12.000 --> 32:26.000
+<v Kyle> And A is going to say "The only thing I know about is this Javascript object over here" and the cycle collector then is going to ask the Javascript garbage collector "Okay what do you know about A prime?"
+
+32:28.000 --> 32:38.000
+<v Kyle> And the Javascript garbage collector will... so actually the cycle collector will run the JS garbage collector just to make sure it's information is all up to date 
+
+32:39.000 --> 32:47.00
+<v Kyle> In particular the information that the cycle collector is interested in is what is called "the color" of these nodes.
+
+32:48.000 --> 32:54.000
+<v Kyle> So I mentioned colors earlier like black, purple, and white, so the two interesting ones from the Javascript side are black and grey
+
+32:55.000 --> 33:06.000
+<v Kyle> Black means that the Javascript garbage collector is sure that this object is alive. So it's a property on, like maybe it's a property on the global object or something, but it's sure it's alive.
+
+33:07.000 --> 33:10.000
+<v Kyle> Grey means it may be alive or it may not be alive.
+
+33:11.000 --> 33:17.000
+<v Kyle> And part of the job of the cycle collector is to figure that out.
+
+33:20.000 --> 33:29.000
+<v Kyle> So it asks what this is. If it finds out that... I'm sorry I should step back slightly.
+
+33:30.000 --> 33:39.000
+<v Kyle> The black or grey referes to whether these objects are known to be alive if you ignore these references coming in from C++.
+
+33:40.000 --> 33:46.000
+<v Kyle> So if you pretend that this isn't there for a minute and then try to figure out if this is alive.
+
+33:47.000 --> 33:57.000
+<v Kyle> So for example if we have a global object up here pointing to this then the answer is yes this is definitely alive so it's color is black.
+
+33:58.000 --> 34:05.000
+<v Kyle> In this case we don't have that so it's going to be color grey.
+
+34:06.000 --> 34:16.000
+<v Kyle> And so when the cycle collector looks there it's going to see that the object is grey which means it's interesting, like it might actually be garbage. If it's black then it will decide "Okay I'm done" because this object is known to be alive.
+
+34:17.000 --> 34:28.000
+<v Kyle> So then it looks, it sees this one is grey and then because this only has grey objects pointing from it this one is grey and this one only has grey objects pointing to it so this one is grey and so on and so on.
+
+34:29.000 --> 34:37.000
+<v Kyle> And eventually it's going to get back over here and it's going to cross this edge again and it's going to cross to this C++ object it knows about.
+
+34:38.000 --> 34:44.000
+<v Kyle> And then it's going to add this to the picture just like a normal reference counted object.
+
+34:45.000 --> 34:51.000
+<v Kyle> So before I draw out the numbers for a very simple example...
+
+34:52.000 --> 35:03.000
+<v Kyle> So when you ask what there reference counts is, this has a reference count of two, this is one, and then these objets don't really have reference counts, but the important thing is that they are grey.
+
+35:10.000 --> 35:12.000
+<v Kyle> All three of them
+
+35:12.000 --> 35:16.000
+<v David> Isn't grey on the Javascript side spelt with an A? Unlike the grey on the C++ side?
+<i>Laughter</i>
+
+35:17.000 --> 35:25.000
+<v Kyle> It may be. So something you may have noticed is that we are very inconsistent about American versus British spellings.
+
+35:26.000 --> 35:28.000
+<v Ralph> In this case it was Canadian.
+
+35:29.000 --> 35:31.000
+<v David> Yes, grey on the C++ side is Canadian english so it's with an 'e'.
+
+35:32.000 --> 35:39.000
+<v Kyle> Okay, well I'm a C++ developer so... but yeah it might be grey with an A, it doesn't really matter.
+<i>Laughter</i>
+
+35:45.000 --> 35:46.000
+<v Chris> Just use the hex code for grey.
+
+35:46.000 --> 35:47.000
+<v Kyle> What?
+
+35:47.000 --> 35:48.000
+<v Chris> Use the hex code for grey.
+
+35:50.000 --> 35:56.000
+<v Kyle> So, what was I going to say?
+
+35:57.000 --> 36:00.000
+<v Daniel> You were talking about the counts and that they were grey.
+
+36:01.000 --> 36:18.000
+<v Kyle> Oh yeah, so the cycle collector is going to look and say "Okay I know about the one reference here", so it's 0, "I know about the two references here", so it's 0, and that all of these things are grey so that means that it's a garbage cylce.
+
+36:19.000 --> 36:21.000
+<v Kyle> If on the other hand...
+
+36:24.000 --> 36:32.000 
+<v Kyle> Ignore I wrote that o and w together. If on the other hand this were black then this wouldn't be a garbage cycle.
+
+36:33.000 --> 36:40.000
+<v Kyle> On the Javascript side we don't actually keep track of reference counts, but we do keep track of "is black or grey".
+
+36:41.000 --> 36:47.000
+<v Kyle> So if this is black then even if these things are 0 it does not get collected, but if this is not here then this does get collected.
+
+36:48.000 --> 38:50.000
+Can you give an example of a black Javascript object? 
+
+36:50.000 --> 37:08.000
+<v Kyle> So a black Javascript object, so for example window dot navigator. The navigator is black. So, actually the reason that it is black is because for the global object the rooting is special and we say "this is a root" until we close a tab, or whatever, and decide it's not a root.
+
+37:09.000 --> 37:21.000
+<v Kyle> At which point that becomes grey, but so long as everything is behaving normally, like a property on the global is known to be black and then properties it points to is black and so on, and so on.
+
+37:22.000 --> 37:34.000
+<v Kyle> Another way something could be black is maybe there is a C++ object over here. Let's call it B. Maybe B has a stack reference. So it's definitely not going to get collected by the cycle collector.
+
+37:35.000 --> 37:49.000
+<v Kyle> And maybe B owns a reference to this object. In this case you have a C++ object which is not being collected by the cycle collector and it holds a refence to this object. So this would be black in this case.
+
+37:50.000 --> 37:51.000
+But like implicitly black?
+
+37:52.000 --> 37:54.000
+<v Kyle> I'm sorry?
+
+37:55.000 --> 37:58.000
+Like, it sounds like, it would be implicitly black by virute of being held by B.
+
+37:59.000 --> 38:00.000
+<v Kyle> Yes, exactly.
+
+38:01.000 --> 38:15.000
+<v Caitlin> I just had a question about how you're tracking which types of objects own object B? So, are you actually like keeping a list of objects that hold a reference to B, or?
+
+38:16.000 --> 38:18.000
+<v Kyle> I'm not sure I understand that question.
+
+38:19.000 --> 38:22.000
+<v Caitlin> I just got here a while ago so I missed a bunch of things.
+
+38:23.000 --> 38:39.000
+<v Kyle> Okay so what happens is, so because this object holds a Javascript object alive it's going to be in the cycle collector's list of things that need to be traced by the Javascript garbage collector regardless of whether it's been add reffed or released or anthing. It's always in that list.
+
+38:40.000 --> 38:53.000
+<v Kyle> So the cycle collector when it wakes up is going to trace all these objects and it's going to look at B and B's reference count is 1, let's say, because there's one reference coming in.
+
+38:54.000 --> 39:00.000
+<v Kyle> But the stack references don't participate in cycle collection at all. Cycle collection is purely opt-in and there's nothing opting in for say, ns com pointer B, on the stack.
+
+39:01.000 --> 39:14.000
+<v Kyle> So as far as the cycle collector is concerned it has one reference from somewhere it doesn't know about, so it's definitely not garbage, and because it's definitely not garbage the Javascript object that holds it alive is going to be black. Which is the Javascript's version of "definitely not garbage".
+
+39:15.000 --> 39:22.000
+<v David> But is it the case that it's not going to be called black into you've run an algorithm over the graph?
+
+39:23.000 --> 39:37.000
+<v Kyle> That's correct. So when the Javascript garbage collector runs it runs without looking at any of these things and  so the Javascript collector is going to decide that all these things are in fact garbage it's going to call them grey
+
+39:38.000 --> 39:45.000
+<v Kyle> And right before it says all the things that are still grey are in fact white, which means garbage, it's going to ask the cycle collector "Tell me what you know about?"
+
+39:46.000 --> 39:56.000
+<v Kyle> And the cycle collector is going to say "Oh well I know about this reference, and I know about this reference , and hey since I know this not garbage then this is actually black and you shouldn't delete it."
+
+39:57.000 --> 39:59.000
+<v Kyle> Does that make sense?
+
+40:00.000 --> 40:03.000
+<v Ralph> So things are white if the cycle collector doesn't say that grey means it's black?
+
+40:04.000 --> 40:09.000
+<v Kyle> Yes. So, it will help if I had another white board.
+<i>Laughter</i>
+
+40:10.000 --> 40:21.000
+<v Kyle> So in garbage collection people like to talk about objects having colors. The relevant ones are: black means it's alive, grey is questionable, and white is definitely garbage.
+
+40:22.000 --> 40:27.000
+<v Ralph> So the JS garbage collector runs and it can only decide black or grey?
+
+40:28.000 --> 40:32.000
+Well so the JS garbage collector runs and it starts by marking everything in the universe grey. Okay?
+
+40:33.000 --> 40:41.000
+<v Kyle> It marks everything as it may be alive or it might not be alive and then it looks at it's set of roots, those set of global objects I was talking about, and it marks those black.
+
+40:42.000 --> 40:50.000
+<v Kyle> And it marks everything that's reachable from those points as black. And so you have a heap that's colored part black and part grey.
+
+40:51.000 --> 41:01.000
+<v Kyle> And then before it takes all the grey stuff and turns it white and gets rid of it -- the very last thing it does is it asks the cycle collector "what do you know about?"
+
+41:02.000 --> 41:10.000
+<v Kyle> And the cycle collector can come in and mark other things as black as well. Once that happens everything that's still grey gets marked as white and gets marked for collection.
+
+41:11.000 --> 41:14.000
+<v Kyle> Alright...
+
+41:15.000 --> 41:24.000
+<v David> When it asks the cycle collector that does the cycle collector in general run an algorithm over it's whole graph? Or does it sometimes just use some old data?
+
+41:25.000 --> 41:34.000
+<v Kyle> No so, the cycle collector and the garbage collector actually run off of cached data from the last time when they're asked this.
+
+41:35.000 --> 41:43.000
+<v Kyle> So the Javascript garbage collector will ask the cycle collector "What things do you know about here?" and the cycle collector is going to use cached data from the last time it ran.
+
+41:44.000 --> 41:51.000
+<v Kyle> And when the cycle collector runs it's going to ask the garbage collector what JS objects have owning references to C++.
+
+41:52.000 --> 42:05.000
+<v Kyle> And that's actually going to use the cached data from last time to. So in order to break these sorts of cycles that cross the language boundary these both have to run, usually multiple times.
+
+42:07.000 --> 42:11.000
+How does the cycle collector find out about B?
+
+42:12.000 --> 42:23.000
+<v Kyle> The cycle collector finds about about B because all C++ objects that hold a reference to Javascript have to be in a list. That ns holds/drops JS object thing that I was telling you about earlier.
+
+42:24.000 --> 42:35.000
+<v Kyle> So if B forgets to tell the cycle collector about itself, it's not going to know anything about this and it's going to decide... actually I should do that...
+<i>Laughter</i>
+
+42:38.000 --> 42:40.00
+<v Kyle> I'll make this a dotted one... 
+
+42:42.000 --> 42:55.000
+<v Kyle> So if this forgets to add itself to that list then the cycle collector is not going to know anything about this. It's going to tell the garbage collector "Hey it's alright to get rid of all this stuff" and then the next time B tries to use B prime -- security bug.
+
+42:57.000 --> 43:02.000
+<v Chris> So if you have a COM pointer on the stack pointing to a Javascript object do you have to use that NS holds reference to macro as well?
+
+43:03.000 --> 43:08.000
+<v Kyle> Okay, so you can't have... a COM pointer doesn't point to a Javascript object.
+
+43:09.000 --> 43:17.000
+<v Kyle> A COM pointer points to a C++ object. So that situation doesn't happen. You can have a pointer on the stack that points to a Javascript object.
+
+43:18.000 --> 43:30.000
+<v Kyle> You can have like a JS object star or JS object. In the current garbage collector setup what the garbage collector does is what we call "conservative stack scanning"
+
+43:31.000 --> 43:42.000
+<v Kyle> So it looks at every entry on the stack -- it has no type information it can see -- so it has no idea if the value on the stack is a JS object pointer or an ns foo pointer or an integer or whatever.
+
+43:43.000 --> 43:51.000
+<v Kyle> It assumes that they're all pointers into the garbage collected heap and if they actually point to an object that is really there, it marks it as black.
+
+43:52.000 --> 43:55.000
+<v Kyle> Regardless of whether or not it's actually a pointer to that.
+
+43:56.000 --> 44:02.000
+<v Kyle> So if you have a number that happens to be have the same value of a pointer to a Javascript object, that object gets marked black. That's why it's called conservative.
+
+44:03.000 --> 44:10.000
+<v Kyle> They're currently in the process of getting rid of that. So in the next few months they're going to switch to an exactly rooted system
+
+44:11.000 --> 44:16.000
+<v Kyle> And so they're going to be a special magic pointer that you have to have to have a pointer into the Javascript heap on the stack.
+
+44:17.000 --> 44:20.000
+<v Kyle> And then there's going to be a list of those somewhere that you can find.
+
+44:21.000 --> 44:23.000
+<v Kyle> So that's basically how it works.
+
+44:26.000 --> 44:32.000
+<v Nick> So do you need to be NS cycle collected impl to hold JS references?
+
+44:33.000 --> 44:35.000
+<v Kyle> Yes. Yup?
+
+44:36.000 --> 44:49.000
+You mentioned that the cycle collector may have to run multiple times. What's the worse case of the number of times that it might run?
+
+44:50.000 --> 45:04.000
+<v Kyle> So I believe if there are no bugs in the cycle collection, in the code that you wrote to implement cycle collection, the worse case scenario is that the garbage collector has to run, the cycle collector has to run, and then the garbage collector has to run again.
+
+45:05.000 --> 45:07.000
+<v Kyle> That's the worse case scenario.
+
+45:08.000 --> 45:20.000
+<v Kyle> Because the first time the garbage collector will mark the JS heap using the outdated data here. Then the cycle collector will run and use this data to figure out the correct state of this heap
+
+45:21.000 --> 45:23.000
+<v Kyle> and it will get rid of the things that are now garbage over here.
+
+45:24.000 --> 45:27.000
+<v Kyle> and then the next time the Javascript garbage collector runs it will get rid of the things that are garbage over here.
+
+45:28.000 --> 45:30.000
+<v Kyle> Yep?
+
+45:31.000 --> 45:38.000
+<v David> But if there are objects that can't form cycles, but can have references accross the heap... ?
+
+45:39.000 --> 45:40.000
+<v Kyle> They must still participate in cycle collection.
+
+45:41.000 --> 45:58.000
+<v David> Right, but, you can get to worse cases. If you have objects that can't form cycles that you can go through to reach something else that does point across to the JS heap and then come back, and back and forth, you could in theory get to any number of iterations.
+
+45:59.000 --> 46:04.000
+<v Kyle> Yeah, but I don't we have -- do we actually have? -- I don't think we actually have any classes that behave that way.
+
+46:05.000 --> 46:08.000
+<v David> We used to have some I think, I don't know if we do. 
+
+46:09.000 --> 46:11.000
+<v Kyle> I think we got rid of those because of the pathalogical behaviour.
+
+46:12.000 --> 46:17.000
+<v Kyle> Anyways, so let me finish this example real quick before I talk about the macrios. I'm already running out of time a little bit.
+
+46:21.000 --> 46:31.000
+<v Kyle> But so in this case where these are 0 and all these Javascript objects are grey then the cycle collector is going to unlink on C and A.
+
+46:32.000 --> 46:34.000
+<v Kyle> Just like they were a garbage C++ cycle.
+
+46:35.000 --> 46:40.000
+<v Kyle> And that's going to get rid of this reference here and this reference here.
+
+46:41.000 --> 46:50.000
+<v Kyle> Alright, and then at some point -- notice that no actual objects have been collected. We've gotten rid of some of these references, but all this memory is still here.
+
+46:51.000 --> 47:04.000
+<v Kyle> Then the next time the Javascript garbage collector runs it's going to see that nothing is holding A prime alive and it's going to delete A prime and the things it holds onto  
+
+47:05.000 --> 47:12.000
+<v Kyle> and that's going to delete A prime and the things it holds onto. And that's going to delete C prime and the things it holds onto, which is eventually going to delete C.
+
+47:13.000 --> 47:16.000
+<v Kyle> And that's how the cycle acutally gets collected.
+
+47:17.000 --> 47:25.000
+<v Kyle> So the cycle collector is responsible for figuring out that this set of C++ objects and this set of Javascript objects is a garbage cycle.
+
+47:26.000 --> 47:36.000
+<v Kyle> And it breaks it from the C++ side and then once that happens the next time the Javascript garbage collector runs, if you did things correctly, it should end up collecting everything.
+
+47:37.000 --> 47:39.000
+<v Kyle> So that's basically how that works.
+
+47:40.000 --> 47:42.000
+<v Kyle> Are there any questions about that? Yep?
+
+47:43.000 --> 47:49.000
+<v Daniel> So when these run are they supposed to be apart of the event loop? Or do they actually interrupt arbitrary code, or? 
+
+47:50.000 --> 48:02.000
+<v Kyle> So the garbage collector can interrupt arbitrary Javascript code and anytime your running Javascript code, or in the Javascript engine just about, the garbage collector can decide to run.
+
+48:03.000 --> 48:08.000
+<v Kyle> The cycle collector runs off the event loop. Yep?
+
+48:09.000 --> 48:15.000
+Is there some kind of determinsm in the order in which C++ objects in a cycle are collected?
+
+48:16.000 --> 48:21.000
+<v Kyle> No. So because in a garbage collected system you cannot rely on any destructor ordering.
+
+48:22.000 --> 48:37.000
+<v Kyle> So in the cases where you do want that -- I mentioned earlier that unlink only has to break the cycle, it doesn't have to release all the references -- there are cases where we do not release all the references in unlink, precisely so that we still have destructor ordering.
+
+48:39.000 --> 48:40.000
+<v Kyle> Those are pretty rare, but they do exist.
+
+48:41.000 --> 48:49.000
+<v David> We've also had cases where people where people have done that because they thought they could get away with it and then unlink didn't actually break the cycle anymore. 
+
+48:50.000 --> 48:53.000
+<v Kyle> Yes and at that point you have a leak, so.
+
+48:54.000 --> 48:55.000
+<v David> And you have a leak that is very difficult to debug -- at least the last time I tried debugging one.
+<i>Laughter</i>
+
+48:56.000 --> 49:06.000
+<v Kyle> Yeah I would imagine that's not that fun. Also you might end up in a situation where it's stuck in the cycle collector and everytime we try to get rid of it doesnt' actually work. That can be really bad for performance.
+
+49:07.000 --> 49:13.000 
+<v Kyle> So, quickly I just wanted to mention some of the macros. These are all in a file called...
+
+49:19.000 --> 49:21.000
+<v Benoit> Hey Kyle, I have a quick question.
+
+
+49:22.000 --> 49:23.000
+<v Kyle> Yep.
+
+49:24.000 --> 49:31.000
+<v Benoit> So during your presentation you mentioned a bunch of cases where the cycle collector performance can go down if certain patterns emerge.
+
+49:32.000 --> 49:39.000
+<v Benoit> Is there any way I can check if the cycle collector is running into those when the cycle collector is being really slow?
+
+49:40.000 --> 49:52.000
+<v Kyle> So unfortunately there's not a simple way to do that. Usually it involves exercising your code and then looking at how long it takes the cycle collector to run when it does.
+
+1
+00:49:54.00 --> 00:49:59.685
+hmm.. so.. it's basically you just have to look
+
+2
+00:49:59.946 --> 00:50:02.485
+and there are some switches you flip to turn it on
+
+3
+00:50:02.837 --> 00:50:05.939
+timing of the garbage collector and cycle collector
+
+4
+00:50:05.939 --> 00:50:09.678
+and then can you look if your cycle collector pause time is set to 200ms
+
+5
+00:50:09.678 --> 00:50:11.678
+then maybe you have a problem.
+
+6
+00:50:11.678 --> 00:50:14.218
+Right.. So if I get a performance problem with that
+
+7
+00:50:14.218 --> 00:50:17.918
+Is there anything that I can do to add more information to debug
+
+8
+00:50:17.918 --> 00:50:22.128
+because the profiles of cycle collector basically flips *from one to the other 
+
+9
+00:50:23.620 --> 00:50:27.880
+So.. Yeah there aren't great tools for that.
+
+10
+00:50:28.181 --> 00:50:32.804
+Usually at this point you call Olli and try to get them to help you
+
+11
+00:50:32.804 --> 00:50:39.106
+You know how we can put sample lable macros *muffled*
+
+12
+00:50:39.183 --> 00:50:40.874
+Would that be possible?
+
+13
+00:50:41.348 --> 00:50:44.548
+So.. The thing you would really be interested in is the Graph size
+
+14
+00:50:46.579 --> 00:50:50.624
+Like if the Graph size is always large
+
+15
+00:50:50.624 --> 00:50:56.356
+But we are never collecting any of it, then you probably have a problem.
+
+16
+00:50:56.356 --> 00:51:01.264
+So that information we should be able to surface at the profiler.. :]
+
+17
+00:51:01.787 --> 00:51:05.032
+... just file a bug!
+
+18
+00:51:05.032 --> 00:51:09.403
+So all the macros you need to implement cycle collection live in this file
+
+19
+00:51:09.403 --> 00:51:12.672
+xpcom/glue/nsCycleCollectionParticipant.h
+
+20
+00:51:12.672 --> 00:51:17.952
+And.. the simplest one -I'm not gonna cover all of them because there are a lot of them -
+
+21
+00:51:19.580 --> 00:51:21.872
+but the simplest ones are..
+
+22
+00:51:45.372 --> 00:51:49.843
+so the simplest ones are NS IMPL CYCLE COLLECTIONX
+
+23
+00:51:49.843 --> 00:51:51.912
+where X is a number
+
+24
+00:51:51.912 --> 00:51:56.923
+And these are the ones that you use when you have only C++ objects
+
+25
+00:51:56.923 --> 00:52:00.153
+when you're only holding reference to C++ objects.
+
+26
+00:52:00.153 --> 00:52:02.763
+And you don't need any fancy handling.
+
+27
+00:52:02.763 --> 00:52:08.517
+The way it works is basically you give the class name..
+
+28
+00:52:08.517 --> 00:52:16.440
+and then X member variables.. then one and two dadada
+
+29
+00:52:16.440 --> 00:52:21.775
+And then everytime, this macro will generate a traverse function that calls
+
+30
+00:52:21.775 --> 00:52:25.212
+Traverse m1, Traverse m2.. Traverse mX
+
+31
+00:52:25.212 --> 00:52:28.122
+And unlink m1, unlink m2, unlink mX
+
+32
+00:52:28.122 --> 00:52:32.322
+This is like as simple as it can possible get
+
+33
+00:52:32.322 --> 00:52:39.976
+There is also a set of macros that lets you implement custom Traverse and unlink methods
+
+34
+00:52:39.976 --> 00:52:43.864
+And you also need to use them if you need a trace method because this stuff doesn't do that.
+
+35
+00:52:43.864 --> 00:53:00.884
+So there is like, there's.. hmm.
+
+36
+00:53:00.884 --> 00:53:03.917
+Yeah so for example if there is 
+
+37
+00:53:39.422 --> 00:53:42.660
+So if you need to implement for example your own custom
+
+38
+00:53:42.660 --> 00:53:45.360
+Oh now we found another one! <i>Laughter</i>
+
+39
+00:53:45.360 --> 00:53:48.300
+If you need to implement your own Traverse method for example you can do
+
+40
+00:53:48.300 --> 00:53:57.208
+NS IMPL TRAVERSE BEGIN (className)... I think.. Yeah
+
+41
+00:53:57.208 --> 00:54:00.708
+And then, you can have your own custom method in here 
+
+42
+00:54:00.708 --> 00:54:03.147
+and NS IMPL TRAVERSE END
+
+43
+00:54:03.147 --> 00:54:09.202
+or you can have NS IMPL TRAVERSE BEGIN INHERITED
+
+44
+00:54:17.229 --> 00:54:20.991
+where you have class and base class
+
+45
+00:54:22.429 --> 00:54:24.631
+and so on and so on and so on..
+
+46
+00:54:24.631 --> 00:54:29.908
+I.. I don't know. This part would be easier if I had a projector hooked up, but I don't know about that at this point.
+
+47
+00:54:31.015 --> 00:54:34.279
+If you have questions about specific macros I'm happy to answer them
+
+48
+00:54:34.279 --> 00:54:38.219
+otherwise I've been planning on writting an article of all or a blog post about all of them
+
+49
+00:54:38.219 --> 00:54:40.218
+I'll try to do that at some point.
+
+50
+00:54:40.218 --> 00:54:47.359
+About the Wrapper Cache ones.. What would you use that for?
+
+51
+00:54:47.359 --> 00:54:50.651
+Alright so, yeah that's a good thing to end with.
+
+52
+00:54:58.065 --> 00:55:02.335
+So I mentioned this earlier about the preserved wrapper stuff and why not
+
+53
+00:55:02.335 --> 00:55:14.185
+So.. A lot of DOM objects and specially in the new WEBIDL DOM bindings we've been implementing
+
+54
+00:55:14.185 --> 00:55:17.293
+Objects use NS WRAPPER CACHE
+
+55
+00:55:21.625 --> 00:55:25.265
+which is basically what it sounds like. It's a cache for the wrapper
+
+56
+00:55:25.265 --> 00:55:29.035
+the javascript object that wraps these C++ objects.
+
+57
+00:55:29.651 --> 00:55:33.645
+And so the way you end using that is inherit from it..
+
+58
+00:55:35.184 --> 00:55:37.835
+See that's something like..
+
+59
+00:55:52.854 --> 00:55:55.078
+You have something like that
+
+60
+00:55:58.494 --> 00:56:03.564
+So anything that inherits from NS WRAPPER CACHE has to implement cycle collection in it
+
+61
+00:56:03.564 --> 00:56:06.834
+and has to implement the trace method.
+
+62
+00:56:06.834 --> 00:56:13.274
+Because you need to, you need to tell the javascript engine about that wrapper.
+
+63
+00:56:13.274 --> 00:56:21.269
+And so you need to.. hm.. There is a special macro that you can use in..
+
+64
+00:56:21.353 --> 00:56:26.353
+There is a macro that is like Traverse Wrapper Cache and so you don't have to write any magic code
+
+65
+00:56:26.353 --> 00:56:30.231
+or anything, is just something that you have to state in that trace method.
+
+66
+00:56:30.490 --> 00:56:36.170
+And there is a set of convenient macros similar to the ones you described that do it?
+
+67
+00:56:36.170 --> 00:56:41.070
+Yeah. So there is also I mentioned NS IMPL CYCLE COLLECTION X or N 
+
+68
+00:56:41.070 --> 00:56:43.470
+I would have used N excepts Cycle Collection ends with an N
+
+69
+00:56:43.470 --> 00:56:48.160
+There is also NS IMPL CYCLE COLLECTION WRAPPER CACHE or something like that
+
+70
+00:56:49.006 --> 00:56:56.298
+There is a version that does the Wrapper Cache and X COM pointers
+
+71
+00:56:56.622 --> 00:57:02.322
+So hopefully for both cases you can kinda use that.
+
+72
+00:57:02.891 --> 00:57:09.216
+So for the ADDREF macros that implement's addref and implement ref cycle collected
+
+73
+00:57:10.004 --> 00:57:13.339
+What about the inherited versions? Do they take care of that for you or is there..
+
+74
+00:57:14.416 --> 00:57:20.029
+When you're doing the addref and release macros there is a
+
+75
+00:57:20.244 --> 00:57:26.146
+if you're not doing cycle collection at all, there's the basic NS IMPL ADDREF
+
+76
+00:57:26.146 --> 00:57:31.556
+there is NS IMPL CYCLE COLLECTED ADDREF which isn't that interesting for this
+
+77
+00:57:31.556 --> 00:57:34.818
+and there is also NS IMPL ADDREF INHERITED
+
+78
+00:57:36.726 --> 00:57:41.728
+For cycle collection there is a NS IMPL CYCLE COLLECTOR ADDREF
+
+79
+00:57:42.974 --> 00:57:45.582
+There is no inherited equivalent, I don't think.
+
+80
+00:57:47.920 --> 00:57:54.445
+And the reason is because either you're cycle collected and your base class is cycle collected
+
+81
+00:57:54.445 --> 00:57:57.915
+in which case it's just the regular inherited one, it just passes through.
+
+82
+00:57:57.915 --> 00:58:02.215
+But on the other hand if your base class is not cycle collected and you are
+
+83
+00:58:02.215 --> 00:58:06.425
+then you actually need a special, like you need to implement...
+
+84
+00:58:06.425 --> 00:58:08.725
+somebody needs to implement the cycle collected part
+
+85
+00:58:08.725 --> 00:58:11.625
+So the base class is cycle collected using the inherited one.
+
+86
+00:58:11.625 --> 00:58:14.065
+And it's not using the cycle collected one
+
+87
+00:58:14.065 --> 00:58:21.705
+But you should try to avoid situations where you have a base class that is not cycle collected
+
+88
+00:58:21.705 --> 00:58:30.377
+and subclass that is, because that means you're gonna have two reference count variables in that class.
+
+89
+00:58:30.377 --> 00:58:32.476
+Because it can take a longer way.
+
+90
+00:58:35.952 --> 00:58:42.896
+So the very last thing I wanna mention is that cycle collected objects are only on the main thread.
+
+91
+00:58:44.357 --> 00:58:53.006
+You cannot addref or release or even modify those variables, member variables from another thread
+
+92
+00:58:53.529 --> 00:58:56.906
+So the cycle collection basically works pausing the entire world
+
+93
+00:58:56.906 --> 00:59:01.316
+and looking it's state, and so if you're modifying things from other threads
+
+94
+00:59:01.316 --> 00:59:03.043
+it will be very angry at you.
+
+95
+00:59:03.551 --> 00:59:08.816
+What is the story about people allowing cycle collecting in worker threads?
+
+96
+00:59:08.816 --> 00:59:12.656
+So I, that is what I'm working on right now actually
+
+97
+00:59:14.056 --> 00:59:19.666
+Right now cycle collected objects can only be used on the main thread
+
+98
+00:59:19.666 --> 00:59:23.397
+and we are going to make it so you can have cycle collected objects on other threads
+
+99
+00:59:23.397 --> 00:59:25.966
+as long as they stay on a single thread.
+
+100
+00:59:26.628 --> 00:59:29.437
+And this cycle collector for them is still only on the main thread?
+
+101
+00:59:29.803 --> 00:59:32.919
+No, the cycle collector for the other threads will be completely separated.
+
+102
+00:59:33.703 --> 00:59:42.784
+So, we are going to have it set up so that you can have.. you can have a cycle collector
+
+103
+00:59:42.784 --> 00:59:45.554
+and cycle collected objects running on another thread
+
+104
+00:59:45.554 --> 00:59:51.224
+but again with single threaded thing that will be single threaded on a thread other than the main thread.
+
+105
+00:59:51.224 --> 00:59:53.734
+And it will have a completely separate object graph
+
+106
+00:59:53.734 --> 00:59:56.563
+a completely separated cycle collector
+
+107
+00:59:56.563 --> 00:59:59.833
+and the cycle collector will be able to break references on that thread.
+
+108
+00:59:59.833 --> 01:00:05.343
+But if you have say, a main thread object that owns a reference to an object on a macro thread
+
+109
+01:00:05.343 --> 01:00:09.043
+and also on the reference back the other way, we are not going to be able to deal with that.
+
+110
+01:00:11.303 --> 01:00:12.582
+So that's the basic point
+
+111
+01:00:12.582 --> 01:00:17.592
+I know a couple people are intereseted, I know Vlad is, I know a couple people are insterested in that specifically. 
+
+112
+01:00:18.469 --> 01:00:21.214
+If you are urgent, we can talk about that afterwards
+
+113
+01:00:23.292 --> 01:00:28.471
+Alright, does anyone else have any other questions about cycle collection or anything like that?
+
+114
+01:00:30.364 --> 01:00:33.233
+How do you decide if a class should be cycle collected?
+
+115
+01:00:33.233 --> 01:00:35.902
+That's an excellent question!
+
+116
+01:00:35.902 --> 01:00:39.212
+So the first question to ask yourself is..
+
+117
+01:00:39.212 --> 01:00:44.267
+Does the class own JavaScript objects? If it does, it has to be cycle collected.
+
+118
+01:00:45.212 --> 01:00:48.181
+Because you need to tell the JavaScript garbage collector about the objects you are using
+
+119
+01:00:48.181 --> 01:00:50.920
+Otherwise the garbage collector will eat them.
+
+120
+01:00:50.920 --> 01:00:55.352
+The second question is probably whether or not you own cycle collected objects
+
+121
+01:00:55.789 --> 01:01:02.136
+so if you have ns com pointer or things that are cycle collected, you may need to be cycle collected.
+
+122
+01:01:03.869 --> 01:01:07.839
+If you're exposed to JavaScript, you probably need to be cycle collected.
+
+123
+01:01:09.469 --> 01:01:14.979
+So the key question to figure out is, the two key questions are :
+
+124
+01:01:14.979 --> 01:01:18.919
+Can you own JavaScript objects? If so, absolutely have to be cycle collected.
+
+125
+01:01:19.150 --> 01:01:23.396
+And can you participate in cycles? And that is a harder question to answer.
+
+126
+01:01:24.851 --> 01:01:29.590
+But in particular if other things can own references to your object, and you own reference
+
+127
+01:01:29.796 --> 01:01:34.805
+to other cycle collected objects, you probably need to be cycle collected.
+
+128
+01:01:35.436 --> 01:01:40.436
+So if you have a class that has no outgoing references
+
+129
+01:01:41.906 --> 01:01:47.731
+If it doesn't hold strong reference to anything, maybe for some reason you created a DOM object that's a number
+
+130
+01:01:48.516 --> 01:01:52.846
+And all it has is an integer in it and that's it. Then you don't need to be cycle collected 
+
+131
+01:01:52.846 --> 01:01:55.386
+Because you can't participe in cycles.
+
+132
+01:01:55.386 --> 01:01:56.971
+Even if that object is reflect in JS?
+
+133
+01:01:57.217 --> 01:01:59.217
+Even if that object is reflect in JS.
+
+134
+01:01:59.419 --> 01:02:02.366
+Unless you can have a preserved wrapper.
+
+135
+01:02:03.158 --> 01:02:06.329
+So shouldn't all objects preserve their wrappers?
+
+136
+01:02:06.759 --> 01:02:10.598
+So, not everything uses a preserved wrapper. So if you remember the example I gave earlier
+
+137
+01:02:10.598 --> 01:02:19.107
+where you call document.GetElementById, if there is no way to get a C++ object back
+
+138
+01:02:20.723 --> 01:02:25.948
+So, If there is no way for JavaScript to get an object again after it's got rid of all it's references to it
+
+139
+01:02:25.948 --> 01:02:28.371
+Then it doesn't need to have a preserved wrapper
+
+140
+01:02:29.088 --> 01:02:29.089
+The key in that scenario was that you can get rid of all the JavaScript references to the element
+
+141
+01:02:35.122 --> 01:02:38.364
+and then get a new one by calling document.getElementById
+
+142
+01:02:39.094 --> 01:02:41.764
+But the same object is for the C++ object?
+
+143
+01:02:41.764 --> 01:02:44.511
+Right. But that's not the case for every one
+
+144
+01:02:44.973 --> 01:02:47.503
+There are certainly objects where you can't do that.
+
+145
+01:02:47.794 --> 01:02:50.078
+Another question that I can't understand.
+
+146
+01:02:50.217 --> 01:02:54.977
+Yes, so in the new WEBIDL bindings set up, you mark those objects.
+
+147
+01:02:54.977 --> 01:02:58.917
+So the WEBIDL bindings enforce that everything inherits from NS WRAPPER CACHE.
+
+148
+01:02:58.917 --> 01:03:01.986
+Unless you mark them with Creator as BenWa said.
+
+149
+01:03:02.756 --> 01:03:08.588
+Creator means that there is no way to get them back after.
+
+150
+01:03:10.034 --> 01:03:11.491
+What? What about Creator?
+
+151
+01:03:11.491 --> 01:03:16.970
+I think the annotation goes on the Constructor or something. I don't know. It makes sense on some level.
+
+152
+01:03:19.401 --> 01:03:21.341
+Short phrase that I couldn't get it.
+
+153
+01:03:21.341 --> 01:03:24.612
+He is saying that the constructor is creating new objects everytime you call those..
+
+154
+01:03:25.135 --> 01:03:27.708
+Ok, I'm not a C++ object that existed before
+
+155
+01:03:27.708 --> 01:03:31.263
+Yeah.. Something like that. I don't remember these I think.
+
+156
+01:03:32.179 --> 01:03:37.542
+So, figure out whether or not your objects can participate in cycles is hard, or can be hard.
+
+157
+01:03:37.957 --> 01:03:42.511
+So if you're not a hundred percent sure it's probably better to err on the side of caution and implement it anyways.
+
+158
+01:03:46.198 --> 01:03:49.690
+Alright, any other questions?
+
+159
+01:03:51.368 --> 01:03:57.278
+I have a little plug to make, there is a tool for a patch against mozilla-central, you can apply and them
+
+160
+01:03:57.278 --> 01:04:02.478
+you will be able to tell you what cycles you actually have and compare that
+
+161
+01:04:02.478 --> 01:04:06.648
+to the ones in known to the system. So you can check your code before you put in m-c.
+
+162
+01:04:08.909 --> 01:04:13.758
+couldn't understand..
+
+163
+01:04:15.219 --> 01:04:17.728
+Is this your NSI supports annotation thing?
+
+164
+01:04:18.036 --> 01:04:22.768
+I completely changed that. Like it has been implemented twice since that.
+
+165
+01:04:23.306 --> 01:04:31.408
+Now it's just implementing the memory allocator and instrumenting the all kinds of strong references we have
+
+166
+01:04:31.623 --> 01:04:34.877
+like HTML markup so it scans them and finds out what the strong references are.
+
+167
+01:04:34.877 --> 01:04:36.947
+Okey! That's pretty cool!
+
+168
+01:04:39.117 --> 01:04:43.957
+Alright, Well, Thanks very much! If you ever have questions about cycle collection
+
+169
+01:04:43.957 --> 01:04:47.957
+or how to implement something or something needs to be cycle collected, you can always come find me
+
+170
+01:04:47.957 --> 01:04:51.599
+or send me an email, or IRC or whatever works for you!
+
+171
+01:04:52.067 --> 01:04:54.220
+I'm always happy to help with that sort of stuff.
+
+172
+01:04:54.301 --> 01:04:57.632
+Thanks guys for coming!
