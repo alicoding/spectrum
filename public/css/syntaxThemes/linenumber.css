@@ -1,0 +1,36 @@
+pre {
+  background-color:#eee;
+  overflow:auto;
+  margin:0 0 1em;
+  padding:.5em 1em;
+}
+
+pre code,
+pre .line-number {
+  font:normal normal 14px/16px "Courier New",Courier,Monospace;
+  color:black;
+  display:block;
+  font-weight: bold;
+}
+
+pre .line-number {
+  float:left;
+  margin:0 1em 0 -1em;
+  border-right: 1px solid #DDDDDD;
+  text-align:right;
+  color: #999;
+  background: none repeat scroll 0 0 #FAFAFA;
+}
+
+pre .line-number span {
+  display:block;
+  padding:0 .5em 0 1em;
+  color: #999;
+  font-weight: normal;
+}
+
+pre .cl {
+  display:block;
+  clear:both;
+
+}

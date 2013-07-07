@@ -93,9 +93,6 @@ app.post('/post/edit/g', middleware.editPost);
 // be careful with this route! it will delete all the data from elasticsearch
 app.get('/admin/delete/all', middleware.dropEScontent);
 
-//js file
-app.get('/js/dillinger.js', route.js('dillinger'));
-
 
 
 
