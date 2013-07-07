@@ -24,6 +24,23 @@ After you have installed the above requirement, and you will be ready to run spe
 
 ----------
 
+# Available page
+
+<br>
+
+ 1. http://localehost:3000  --- homepage 
+ 2. http://localhost:3000/new/post --- create new post
+ 3. http://localhost:3000/:id/edit --- edit post
+
+<br>
+
+`:id` is equal to the url of the page: for example:
+<br>
+http://localhost:3000/hello-world/edit
+
+----------
+
+
 #API
 <br>
 
