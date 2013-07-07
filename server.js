@@ -23,9 +23,10 @@ app.configure(function () {
   app.use(express.logger('dev'));
   app.use( express.compress());
   app.use( express.bodyParser() );
+  app.use(express.static(__dirname + '/public'));
 
   var optimize = NODE_ENV !== "development",
-  tmpDir = path.join( require( "os" ).tmpDir(), "mozilla.webmaker.org" );
+  tmpDir = path.join( require( "os" ).tmpDir(), "spectrum" );
 
 app.use( lessMiddleWare({
   once: optimize,
@@ -36,9 +37,10 @@ app.use( lessMiddleWare({
   yuicompress: optimize,
   optimization: optimize ? 0 : 2
 }));
+
+
 app.use( express.static( tmpDir ) );
 
-    app.use(express.static(__dirname + '/public'));
 
   app.use( app.router );
 	
