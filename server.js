@@ -1,16 +1,19 @@
-var ESsetup       = require('./config/ESconfig'),
-    express       = require('express'),
-    nunjucks      = require('nunjucks'),
-    path          = require('path'),
-    route         = require('./routes'),
-    fs            = require('fs');
+var ESsetup         = require('./config/ESconfig'),
+    express         = require('express'),
+    nunjucks        = require('nunjucks'),
+    path            = require('path'),
+    route           = require('./routes'),
+    fs              = require('fs');
 
 
-var app           = express(),
-    env           = require('./config/environment'),
-    nunjucksEnv   = new nunjucks.Environment(new nunjucks.FileSystemLoader(path.join(__dirname, 'views'))),
-    logger        = require('./lib/logger'),
-    middleware    = require('./lib/middleware')(ESsetup, app);
+var app             = express(),
+    env             = require('./config/environment'),
+    nunjucksEnv     = new nunjucks.Environment(new nunjucks.FileSystemLoader(path.join(__dirname, 'views'))),
+    logger          = require('./lib/logger'),
+    middleware      = require('./lib/middleware')(ESsetup, app),
+    lessMiddleWare  = require('less-middleware'),
+    NODE_ENV        = env.get( "NODE_ENV" ),
+    WWW_ROOT        = path.resolve( __dirname, "public" );
 
 // Express Configuration
 app.configure(function () {
@@ -19,8 +22,23 @@ app.configure(function () {
   app.disable('x-powered-by');
   app.use(express.logger('dev'));
   app.use( express.compress());
-  app.use( express.static( path.join(__dirname, 'public')));
   app.use( express.bodyParser() );
+
+  var optimize = NODE_ENV !== "development",
+  tmpDir = path.join( require( "os" ).tmpDir(), "mozilla.webmaker.org" );
+
+app.use( lessMiddleWare({
+  once: optimize,
+  debug: !optimize,
+  dest: tmpDir,
+  src: WWW_ROOT,
+  compress: optimize,
+  yuicompress: optimize,
+  optimization: optimize ? 0 : 2
+}));
+app.use( express.static( tmpDir ) );
+
+    app.use(express.static(__dirname + '/public'));
 
   app.use( app.router );
 	
