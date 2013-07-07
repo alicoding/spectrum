@@ -5,8 +5,10 @@ exports.pages = function( view ) {
 };
 
 // Show the home page
-exports.index = function(req, res) {
-  return res.render('editor/index.html');
+exports.index = function( mode ) {
+	return function( req, res ) {
+  res.render('editor/index.html', mode);
+	};
 };
 
 

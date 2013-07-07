@@ -81,7 +81,7 @@ app.post('/setting/author/g', middleware.getAuthorSetting);
 app.post('/setting/author/s', middleware.saveAuthorSetting);
 
 //create new post
-app.get('/new/post', route.index);
+app.get('/new/post', route.index({mode: "create"}));
 // app.get('/new/post', route.pages('admin/editor'));
 app.post('/new/post', middleware.createPost);
 app.post('/edit/post', middleware.publishEditPost);

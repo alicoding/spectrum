@@ -55,13 +55,19 @@
         
       
         <div class="wmd-panel">
-          <input type="text" value="{{title}}" placeholder="Text input" id="title">
+          <input type="text" value="{{title}}" placeholder="Title goes here" id="title">
         <div id="wmd-button-bar"></div>
         <textarea class="wmd-input" id="wmd-input">{{content}}</textarea>
         </div>
         <div id="wmd-preview" class="wmd-panel wmd-preview"></div>
+        {% if mode == "edit" %} 
+        <button id="post" class="btn btn-large btn-block btn-primary">Update</button>
+        {% else %}
+        <button id="post" class="btn btn-large btn-block btn-primary">Publish</button>
+        {% endif %}
+
     </div> 
-                    <button id="post">post</button>
+                    
 
     <script type="text/javascript">
         (function () {
