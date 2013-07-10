@@ -216,7 +216,7 @@ define([
             var title = fileMgr.currentFile.title;
             var fileDesc = fileMgr.createFile(title, content);
             fileMgr.selectFile(fileDesc);
-            window.location.href = ".";
+            history.back();
         });
         $(".action-welcome-file").click(function() {
             var fileDesc = fileMgr.createFile(WELCOME_DOCUMENT_TITLE, welcomeContent);
