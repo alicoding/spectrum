@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html manifest="/stackedit/cache.manifest">
+<html>
 <head>
 <title>StackEdit - Markdown editor</title>
 <link rel="canonical" href="http://benweet.github.io/stackedit/">
@@ -14,9 +14,6 @@
 <script>
     // Use http://.../?debug to serve original CSS/JavaScript files instead of minified
     var suffix = "";
-    if(!location.search.match(/(\?|&)debug/)) {
-        suffix = "-min";
-    }
     document.write('<link href="/stackedit/css/main' + suffix + '.css" rel="stylesheet">');
     var theme = localStorage.theme;
     if(theme) {
