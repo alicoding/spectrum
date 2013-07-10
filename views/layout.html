@@ -7,11 +7,12 @@
     <link rel="stylesheet" href="/less/bootstrap/bootstrap.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="/css/bootstrap-responsive.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/css/syntaxThemes/github.css">
-    <link rel="stylesheet" href="/css/syntaxThemes/linenumber.css">
+    <link rel="stylesheet" href="/css/tomorrow.css">
+        <link rel="stylesheet" href="/css/prettify.css">
+  <script src="/js/prettify.js"></script>
 
 </head>
-<body>
+<body onload="prettyPrint();">
   {% endblock %}
 
 	{% block header %}
@@ -32,10 +33,6 @@
 
     <script src="/ext/js/jquery.js"></script>
     <script src="/ext/js/bootstrap.min.js"></script>
-    <script src="/js/run_prettify.js"></script>
-    <script src="/js/prettify.js"></script>
-
-
 
     {% endblock %}
 

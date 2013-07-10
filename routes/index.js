@@ -7,7 +7,7 @@ exports.pages = function( view ) {
 // Show the home page
 exports.index = function( mode ) {
 	return function( req, res ) {
-  res.render('editor/index.html', mode);
+  res.render('stackedit/index.html', mode);
 	};
 };
 

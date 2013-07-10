@@ -86,6 +86,8 @@ app.get('/new/post', route.index({mode: "create"}));
 app.post('/new/post', middleware.createPost);
 app.post('/edit/post', middleware.publishEditPost);
 
+app.get('/editor/viewer.html', route.pages("editor/viewer"));
+
 //edit an existing post
 app.post('/post/edit/g', middleware.editPost);
 
