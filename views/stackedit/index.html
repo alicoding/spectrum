@@ -14,6 +14,9 @@
 <script>
     // Use http://.../?debug to serve original CSS/JavaScript files instead of minified
     var suffix = "";
+    if(!location.search.match(/(\?|&)debug/)) {
+        suffix = "-min";
+    }
     document.write('<link href="/stackedit/css/main' + suffix + '.css" rel="stylesheet">');
     var theme = localStorage.theme;
     if(theme) {
