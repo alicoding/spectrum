@@ -4,6 +4,7 @@
 <script type="text/javascript">
 
 var redirectUrl = location.href.substring(0, location.href.indexOf("gdrive-action.html"));
+console.log(redirectUrl);
 var state = decodeURI((/state=(.+?)(&|$)/
     .exec(location.search) || [ , null ])[1]);
 if(state) {
