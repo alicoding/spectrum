@@ -3,8 +3,8 @@
 <head>
 <title>StackEdit Viewer</title>
 <link rel="canonical" href="http://benweet.github.io/stackedit/viewer.html">
-<link rel="icon" href="/stackedit/img/stackedit-32.ico" type="image/x-icon">
-<link rel="shortcut icon" href="/stackedit/img/stackedit-32.ico"
+<link rel="icon" href="img/stackedit-32.ico" type="image/x-icon">
+<link rel="shortcut icon" href="img/stackedit-32.ico"
 	type="image/x-icon">
 <meta name="description"
 	content="StackEdit is a free, open-source Markdown editor based on PageDown, the Markdown library used by Stack Overflow and the other Stack Exchange sites.">
@@ -14,7 +14,6 @@
 <script>
 	// Use http://.../?debug to serve original CSS/JavaScript files instead of minified
 	var suffix = "";
-	document.write('<link href="/stackedit/css/main' + suffix + '.css" rel="stylesheet">');
 	var theme = localStorage.theme;
 	if(theme) {
         document.write('<link href="/stackedit/themes/' + theme + '/' + theme + '.css" rel="stylesheet">');
@@ -22,6 +21,14 @@
 	var require = { baseUrl : "/stackedit/js", deps : [ "main" + suffix ] };
     var viewerMode = true;
 </script>
+
+<link rel="stylesheet" href="/stackedit/css/bootstrap.css" />
+<link rel="stylesheet" href="/stackedit/css/jgrowl.css" />
+<link rel="stylesheet" href="/stackedit/css/prettify.css" />
+<link rel="stylesheet" href="/stackedit/css/highlight.css" />
+<link rel="stylesheet" href="/stackedit/css/default.css" />
+
+
 <script src="/stackedit/js/libs/require.js"></script>
 </head>
 <body class="viewer">
