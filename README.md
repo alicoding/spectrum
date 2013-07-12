@@ -18,9 +18,9 @@ After you have installed the above requirements you will be ready to run spectru
 
 ##Available Pages
 
- 1. **Homepage** (http://localhost:3000)
- 2. **Create New Post** (http://localhost:3000/new/post)
- 3. **Edit Post** (http://localhost:3000/:id/edit)
+ 1. **Homepage** (<http://localhost:3000>)
+ 2. **Create New Post** (<http://localhost:3000/new/post>)
+ 3. **Edit Post** (<http://localhost:3000/:id/edit>)
 
 Where **:id** is equal to the url of the page. For example in the following URL **hello-world** would be the ID of the post.
 
@@ -32,12 +32,14 @@ Where **:id** is equal to the url of the page. For example in the following URL 
 
 You can use the following variables on this page:
 
+``` javascript
       {{ url }} -- URL of the post.
       {{ title }} -- Title of the post.
       {{ email }} -- Email address of the author.
       {{ author }} -- Author's name.
       {{ postedOn }} -- Date posted.
       {{ content }} -- Content of the post.
+```
 
 ###Index.html
 
@@ -45,6 +47,7 @@ This is the home page. By default it contains the 10 most recent posts. We are u
 
 In this example we are going to loop through `posts` which is an object containing an array of blog posts
 
+``` javascript
     {% for post in posts %}
       {{ post.url }}
       {{ post.title }}
@@ -52,19 +55,22 @@ In this example we are going to loop through `posts` which is an object containi
       {{ post.author }}
       {{ post.postedOn }}
     {% endfor %}
+```
 
-###Pagination
+###Pagination.html
 
 For the pagination we have an API that will be used to detect the current page as well as the next page. We also check if whether or not the next page has a post.
 
-    <ul>
-        {% if hasPrevious == true %}
-        <li><a href="/page/{{prevPage}}">Previous</a></li>
-        {% endif %}
-        {% if hasNext == true %}
-        <li><a href="/page/{{nextPage}}">Next</a></li>
-        {% endif %}
-    </ul>
+``` html
+<ul class="pager">
+    {% if hasPrevious == true %}
+    <li><a href="/page/{{prevPage}}">Previous</a></li>
+    {% endif %}
+    {% if hasNext == true %}
+    <li><a href="/page/{{nextPage}}">Next</a></li>
+    {% endif %}
+</ul>
+```
 
 [1]: http://nodejs.org
 [2]: http://elasticsearch.org
