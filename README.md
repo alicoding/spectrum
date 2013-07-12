@@ -32,7 +32,7 @@ Where **:id** is equal to the url of the page. For example in the following URL 
 
 You can use the following variables on this page:
 
-``` javascript
+``` html
       {{ url }} -- URL of the post.
       {{ title }} -- Title of the post.
       {{ email }} -- Email address of the author.
