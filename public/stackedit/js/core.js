@@ -573,5 +573,10 @@ define([
 
     });
 
+ var $loading = $('#loader')
+      $loading.remove()
+    
+    .addClass('fade_slow');
+
     return core;
 });

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html manifest="/cache.manifest">
+<html>
 <head>
 <title>StackEdit - Markdown editor</title>
 <link rel="canonical" href="http://benweet.github.io/stackedit/">
@@ -13,11 +13,8 @@
 <meta name="msvalidate.01" content="5E47EE6F67B069C17E3CDD418351A612" />
 
 <script>
-    // Use http://.../?debug to serve original CSS/JavaScript files instead of minified
-    var suffix = "";
-    if(!location.search.match(/(\?|&)debug/)) {
-        suffix = "-min";
-    }
+
+
     var theme = localStorage.theme;
     if(theme) {
         document.write('<link href="/stackedit/themes/' + theme + '/' + theme + '.css" rel="stylesheet">');
@@ -25,7 +22,7 @@
     var require = {
         baseUrl: "/stackedit/js",
         deps: [
-            "main" + suffix
+            "main" 
         ]
     };
     var viewerMode = false;
@@ -36,12 +33,32 @@
 <link rel="stylesheet" href="/stackedit/css/prettify.css" />
 <link rel="stylesheet" href="/stackedit/css/highlight.css" />
 <link rel="stylesheet" href="/stackedit/css/default.css" />
-
+<style>
+#test p {
+    opacity: 0;
+    margin-top: 25px;
+    font-size: 21px;
+    text-align: center;
+    -webkit-transition: opacity 2s ease-in;
+    -moz-transition: opacity 2s ease-in;
+    -o-transition: opacity 2s ease-in;
+    -ms-transition: opacity 2s ease-in;
+    transition: opacity 2s ease-in;
+}
+#test p.load {
+    opacity: 1;
+}
+</style>
 
 <script src="/stackedit/js/libs/require.js"></script>
+
 </head>
 <body>
-	<div id="navbar" class="navbar navbar-fixed-top ui-layout-north">
+
+	<img src="/img/loading.gif" id="loader" alt"Loading" >
+
+
+  	<div id="navbar" class="navbar navbar-fixed-top ui-layout-north">
 		<div class="navbar-inner">
 
 			<ul class="nav">
