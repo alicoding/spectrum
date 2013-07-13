@@ -18,7 +18,6 @@
     if(!location.search.match(/(\?|&)debug/)) {
         suffix = "-min";
     }
-    document.write('<link href="/stackedit/css/main' + suffix + '.css" rel="stylesheet">');
     var theme = localStorage.theme;
     if(theme) {
         document.write('<link href="/stackedit/themes/' + theme + '/' + theme + '.css" rel="stylesheet">');
