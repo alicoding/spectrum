@@ -4,8 +4,7 @@ var ESsetup         = require('./config/ESconfig'),
     path            = require('path'),
     route           = require('./routes'),
     fs              = require('fs');
-
-
+    
 var app             = express(),
     env             = require('./config/environment'),
     nunjucksEnv     = new nunjucks.Environment(new nunjucks.FileSystemLoader(path.join(__dirname, 'views'))),
@@ -38,9 +37,7 @@ app.use( lessMiddleWare({
   optimization: optimize ? 0 : 2
 }));
 
-
 app.use( express.static( tmpDir ) );
-
 
   app.use( app.router );
 	
@@ -91,12 +88,8 @@ app.get('/editor/viewer.html', route.pages("editor/viewer"));
 //edit an existing post
 app.post('/post/edit/g', middleware.editPost);
 
-
 // be careful with this route! it will delete all the data from elasticsearch
 app.get('/admin/delete/all', middleware.dropEScontent);
-
-
-
 
 app.listen( env.get('PORT'), function() {
   logger.info("HTTP server listening on port " + env.get('PORT') + ".");

@@ -226,7 +226,6 @@ define([
           });
 
       $("#post").click(function (){
-
           var theContent = $("#wmd-preview").html();
 
           _title = $('#file-title-input').val(),
@@ -248,7 +247,6 @@ define([
             saveToServerAjaxCall('/edit/post', {data:theContent,title:_title,url:_url}, function () {
             });
           }
-
       });
 
         function saveToServerAjaxCall(url, data, callback) {
