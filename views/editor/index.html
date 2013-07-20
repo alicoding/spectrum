@@ -11,14 +11,27 @@
 
   <link rel="stylesheet" href="http://yandex.st/highlightjs/7.3/styles/github.min.css">
   <script src="http://yandex.st/highlightjs/7.3/highlight.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link rel="stylesheet" href="/css/normalize.css">
-  <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/less/bootstrap/bootstrap.css">
+        <link href="/css/bootstrap-responsive.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/style.css">
+
 </head>
 <body>
+<div class="navbar">
+  <div class="navbar-inner">
+    <ul class="nav">
+      <li><input id="title" class="input-xlarge" type="text" value="{{title}}"
+        placeholder="Title goes here"></li>
+      <li><i id="post" class="icon-check"></i></li>
+    </ul>
+  </div>
+</div>
 
 <div id="input">
-  <textarea id="kramdown-input" class="mousetrap"></textarea>
+  <textarea id="kramdown-input" class="mousetrap">{{content}}</textarea>
 </div>
 
 <div id="output">
@@ -38,10 +51,69 @@ $(function() {
 });
 
 Mousetrap.bind('command+enter', function(e, combo) {
-    $.post('/new/post', { data: $('#kramdown-input').val(), title: "wo11wow", url: "he2he" }, function(data) {
-      window.location.href = '/'+data.url;
-    });
+    publish();
 });
+
+$("#post").click(function () {
+
+  publish();
+
+});
+
+function publish ()
+{
+
+
+  var theContent = $('#kramdown-input').val(),
+  _title = $('#title').val(),
+  _url = convertToSlug(_title.trim());
+  if (!_title) {
+    return alert("Please enter the title");
+  }
+  if (!theContent) {
+    return alert("Please enter some content");
+  }
+  var editPost = '{{mode}}';
+  if (editPost != "edit") {
+    saveToServerAjaxCall('/new/post', {
+      data: theContent,
+      title: _title,
+      url: _url
+    }, function () {});
+  } else {
+    saveToServerAjaxCall('/edit/post', {
+      data: theContent,
+      title: _title,
+      url: _url
+    }, function () {});
+  }
+
+}
+
+function saveToServerAjaxCall(url, data, callback) {
+  $.ajax({
+    type: 'POST',
+    data: JSON.stringify(data),
+    contentType: 'application/json',
+    url: url,
+    statusCode: {
+      200: function (response) {},
+      201: function (response) {},
+      401: function (response) {},
+      404: function (response) {}
+    },
+    success: function (data) {
+      window.location.href = '/' + data.url;
+    }
+  });
+}
+
+function convertToSlug(Text) {
+  return Text
+  .toLowerCase()
+  .replace(/ /g, ' ')
+  .replace(/[^\w-]+/g, ' ');
+}
 
 </script>
 
