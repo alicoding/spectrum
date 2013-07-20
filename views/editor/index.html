@@ -1,140 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html class="no-js" lang="en">
 <head>
+  <meta charset="utf-8">
+  <title>Kramdown Demo</title>
+    <script src="http://cdn.craig.is/js/mousetrap/mousetrap.min.js"></script>
 
-    <meta charset="utf-8">
-    <title>PageDown-Bootstrap Demo Page</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="stylesheet" href="/less/Markdown.Editor.css">
-<!--     <link rel="stylesheet" href="/css/syntaxThemes/github.css">
-    <link rel="stylesheet" href="/css/syntaxThemes/linenumber.css">
-    <script src="/js/run_prettify.js"></script>
- -->
-    <style>
-        body {
-            background-color: White;
-            padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-        }
-    </style>
+  <script language="javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
-    <script src="/js/jquery.min.js"></script>
-    <script src="/js/bootstrap-transition.js"></script>
-    <script src="/js/bootstrap-modal.js"></script>
-    <script src="/js/bootstrap-tooltip.js"></script>
-    <script type="text/javascript" src="/js/Markdown.Converter.js"></script>
-    <script type="text/javascript" src="/js/Markdown.Sanitizer.js"></script>
-    <script type="text/javascript" src="/js/Markdown.Editor.js"></script>   
-     
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  <link rel="stylesheet" href="http://yandex.st/highlightjs/7.3/styles/github.min.css">
+  <script src="http://yandex.st/highlightjs/7.3/highlight.min.js"></script>
+
+  <link rel="stylesheet" href="/css/normalize.css">
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <div class="navbar navbar-fixed-top">
-        <div class="navbar-inner">
-            <div class="container">
-                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </a>
-                <a class="brand" href="#">PageDown-Bootstrap</a>
-                <div class="nav-collapse">
-                    <ul class="nav">
-                        <li><a href="https://github.com/samwillis/pagedown-bootstrap">Project on GitHub</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="container">
-        
-        <div class="wmd-panel">
-        <input class="input-block-level" id="title" value="{{title}}" type="text" placeholder="Title goes here">
-        <div id="wmd-button-bar"></div>
-        <textarea class="wmd-input" id="wmd-input">{{content}}</textarea>
-        </div>
-        <div id="wmd-preview" class="wmd-panel wmd-preview"></div>
-        {% if mode == "edit" %} 
-        <button id="post" class="btn btn-large btn-block btn-primary">Update</button>
-        {% else %}
-        <button id="post" class="btn btn-large btn-block btn-primary">Publish</button>
-        {% endif %}
+<div id="input">
+  <textarea id="kramdown-input" class="mousetrap"></textarea>
+</div>
 
-    </div> 
-    <script type="text/javascript">
-        (function () {
-            var converter = new Markdown.Converter();
-            function help () { 
-              window.open('http://daringfireball.net/projects/markdown/syntax'); 
-            }
-            var editor = new Markdown.Editor(converter, '', { handler: help });
-            editor.run();
-        })();
+<div id="output">
+</div>
 
-        $("#post").click(function (){
+<script>
+$(function() {
+  $('#kramdown-input').keyup(function() {
+    $.post('/editor/preview', { text: $(this).val() }, function(data) {
+      $('#output').html(data);
+      $('pre code').each(function(i, e) { hljs.highlightBlock(e) });
+      MathJax.Hub.Queue(['Typeset', MathJax.Hub]);
+    });
+  });
 
-  var theContent = $('#wmd-input').val(),
-
-   _title = $('#title').val(),
-   
-      _url = convertToSlug(_title.trim());
-      if (!_title){
-        return alert("Please enter the title");
-      } 
-      if(!theContent) {
-        return alert("Please enter some content");
-      }
-
-      var editPost = '{{mode}}';
-
-      if(editPost != "edit") {
-        saveToServerAjaxCall('/new/post', {data:theContent,title:_title, url: _url}, function () {
-        });
-      } else {
-        saveToServerAjaxCall('/edit/post', {data:theContent,title:_title,url:_url}, function () {
-        });
-      }
-
+  $('#kramdown-input').trigger('keyup');
 });
 
-function saveToServerAjaxCall(url, data, callback) {
-
-  $.ajax({
-    type: 'POST',
-    data: JSON.stringify(data),
-    contentType: 'application/json',
-    url: url,
-    statusCode: {
-      200: function (response) {
-
-      },
-      201: function (response) {
-
-      },
-      401: function (response) {
-
-      },
-      404: function (response) {
-
-      }
-   },
-    success: function (data) {
+Mousetrap.bind('command+enter', function(e, combo) {
+    $.post('/new/post', { data: $('#kramdown-input').val(), title: "wo11wow", url: "he2he" }, function(data) {
       window.location.href = '/'+data.url;
-    }
-  });
-}
+    });
+});
 
-function convertToSlug(Text)
-{
-    return Text
-        .toLowerCase()
-        .replace(/ /g,' ')
-        .replace(/[^\w-]+/g,' ')
-        ;
-}
-    </script>
-       <!-- <script src="/js/prettify.js"></script> -->
+</script>
 
 </body>
 </html>

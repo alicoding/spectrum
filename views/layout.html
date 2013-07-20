@@ -7,12 +7,14 @@
     <link rel="stylesheet" href="/less/bootstrap/bootstrap.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="/css/bootstrap-responsive.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/css/tomorrow.css">
-        <link rel="stylesheet" href="/css/prettify.css">
-  <script src="/js/prettify.js"></script>
+  <link rel="stylesheet" href="http://yandex.st/highlightjs/7.3/styles/github.min.css">
+  <script src="http://yandex.st/highlightjs/7.3/highlight.min.js"></script>
+
+  <link rel="stylesheet" href="/css/normalize.css">
+  <link rel="stylesheet" href="/css/style.css">
 
 </head>
-<body onload="prettyPrint();">
+<body>
   {% endblock %}
 
 	{% block header %}
@@ -33,7 +35,7 @@
 
     <script src="/ext/js/jquery.js"></script>
     <script src="/ext/js/bootstrap.min.js"></script>
-
+    <script>hljs.initHighlightingOnLoad();</script>
     {% endblock %}
 
 
