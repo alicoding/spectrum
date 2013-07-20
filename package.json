@@ -6,14 +6,13 @@
 		"start": "node server.js"
 	},
 	"dependencies": {
-		"elasticsearch": "~0.3.2",		
-		"express": "3.2.5",
+		"elasticsearch": "~0.3.6",		
+		"express": "3.3.4",
 		"habitat": "0.4.1",
 		"less-middleware": "0.1.12",
-		"node-markdown": ">=0.1.0",
-		"nunjucks": "*",
-		"path": "*",
-		"request": "*",
+		"nunjucks": "0.1.9",
+		"path": "0.4.9",
+		"request": "2.22.0",
 		"slug": "0.3.3",
 		"winston": "0.7.1"
 	}
