@@ -40,6 +40,7 @@ html, body {
 	padding: 1%;
 	background-color: #eee;
 	word-wrap: break-word;
+
 }
 
 #input textarea {
@@ -57,7 +58,7 @@ pre code {
 	line-height: 1.3em;
 }
 
-textarea, pre code {
+#output, textarea, pre code {
 	font-family: Menlo, Monaco, Consolas, "Lucida Console", "Courier New", Monospace;
 }
 
