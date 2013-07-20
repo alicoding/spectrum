@@ -32,20 +32,15 @@
 </div>
 
 <div id="input">
-  <textarea id="kramdown-input" class="mousetrap">
-
-
-
-{% if content %}
-
+  <textarea id="kramdown-input" class="mousetrap">{% if content %}
 {{content}}
 
 {% else %}
-Welcome to StackEdit! 
+Welcome to Spectrum! 
 =====================
 {: #welcome}
 
-Hello, I am your first Markdown document within **StackEdit**[^stackedit]. Don't delete me, I can be helpful. I can be recovered anyway in the `Utils` tab of the <i class="icon-cog"></i> `Settings` dialog.
+Hello, I am your first Markdown document within **Spectrum**[^Spectrum]. Don't delete me, I can be helpful. I can be recovered anyway in the `Utils` tab of the <i class="icon-cog"></i> `Settings` dialog.
 
 ----------
 
@@ -53,7 +48,7 @@ Hello, I am your first Markdown document within **StackEdit**[^stackedit]. Don't
 Documents
 ---------
 
-**StackEdit** stores your documents in the browser local storage, which means all your documents are automatically saved locally and are accessible offline.
+**Spectrum** stores your documents in the browser local storage, which means all your documents are automatically saved locally and are accessible offline.
 
 #### <i class="icon-file"></i> Create a document
 
@@ -77,7 +72,7 @@ You can delete the current document by clicking the <i class="icon-trash"></i> b
 Synchronization
 ---------------
 
-**StackEdit** can be combined with **Google Drive** and **Dropbox** to have your documents centralized in the *Cloud*. The synchronization mechanism will take care of uploading your modifications or downloading the latest version of your documents.
+**Spectrum** can be combined with **Google Drive** and **Dropbox** to have your documents centralized in the *Cloud*. The synchronization mechanism will take care of uploading your modifications or downloading the latest version of your documents.
 
 #### <i class="icon-download"></i> Import a document
 
@@ -85,11 +80,11 @@ You can import a document from the *Cloud* by going to the <i class="icon-gdrive
 
 #### <i class="icon-upload"></i> Export a document
 
-You can export any document by going to the <i class="icon-gdrive"></i> `Google Drive` or the <i class="icon-dropbox"></i> `Dropbox` sub-menu and by clicking `Export to...`. Even if your document is already synchronized with **Google Drive** or **Dropbox**, you can export it to a another location. **StackEdit** can synchronize one document with multiple locations.
+You can export any document by going to the <i class="icon-gdrive"></i> `Google Drive` or the <i class="icon-dropbox"></i> `Dropbox` sub-menu and by clicking `Export to...`. Even if your document is already synchronized with **Google Drive** or **Dropbox**, you can export it to a another location. **Spectrum** can synchronize one document with multiple locations.
 
 #### <i class="icon-refresh"></i> Synchronize a document
 
-Once your document is linked to a **Google Drive** or a **Dropbox** file, **StackEdit** will periodically (every 3 minutes) synchronize it by downloading/uploading any modification. Any conflict will be detected, and a local copy of your document will be created as a backup if necessary.
+Once your document is linked to a **Google Drive** or a **Dropbox** file, **Spectrum** will periodically (every 3 minutes) synchronize it by downloading/uploading any modification. Any conflict will be detected, and a local copy of your document will be created as a backup if necessary.
 
 If you just have modified your document and you want to force the synchronization, click the <i class="icon-refresh"></i> button in the navigation bar.
 
@@ -101,7 +96,7 @@ If you just have modified your document and you want to force the synchronizatio
 
 #### <i class="icon-refresh"></i> Manage document synchronization
 
-Since one document can be synchronized with multiple locations, you can list and manage synchronized locations by clicking <i class="icon-refresh"></i> `Manage synchronization` in the <i class="icon-stackedit"></i> menu. This will open a dialog box allowing you to add or remove synchronization links that are associated to your document.
+Since one document can be synchronized with multiple locations, you can list and manage synchronized locations by clicking <i class="icon-refresh"></i> `Manage synchronization` in the <i class="icon-Spectrum"></i> menu. This will open a dialog box allowing you to add or remove synchronization links that are associated to your document.
 
 > **NOTE:** If you delete the file from **Google Drive** or from **Dropbox**, the document will no longer be synchronized with that location.
 
@@ -111,7 +106,7 @@ Since one document can be synchronized with multiple locations, you can list and
 Publication
 -----------
 
-Once you are happy with your document, you can publish it on different websites directly from **StackEdit**. As for now, **StackEdit** can publish on **Blogger**, **Dropbox**, **Gist**, **GitHub**, **Google Drive**, **Tumblr**, **WordPress** and on any SSH server.
+Once you are happy with your document, you can publish it on different websites directly from **Spectrum**. As for now, **Spectrum** can publish on **Blogger**, **Dropbox**, **Gist**, **GitHub**, **Google Drive**, **Tumblr**, **WordPress** and on any SSH server.
 
 #### <i class="icon-share"></i> Publish a document
 
@@ -125,7 +120,7 @@ You can publish your document by going to the <i class="icon-share"></i> `Publis
 
 #### <i class="icon-share"></i> Update a publication
 
-After publishing, **StackEdit** will keep your document linked to that publish location so that you can update it easily. Once you have modified your document and you want to update your publication, click on the <i class="icon-share"></i> button in the navigation bar.
+After publishing, **Spectrum** will keep your document linked to that publish location so that you can update it easily. Once you have modified your document and you want to update your publication, click on the <i class="icon-share"></i> button in the navigation bar.
 
 > **NOTE:** The <i class="icon-share"></i> button is disabled when:
 > 
@@ -134,7 +129,7 @@ After publishing, **StackEdit** will keep your document linked to that publish l
 
 #### <i class="icon-share"></i> Manage document publication
 
-Since one document can be published on multiple locations, you can list and manage publish locations by clicking <i class="icon-share"></i> `Manage publication` in the <i class="icon-stackedit"></i> menu. This will open a dialog box allowing you to remove publication links that are associated to your document.
+Since one document can be published on multiple locations, you can list and manage publish locations by clicking <i class="icon-share"></i> `Manage publication` in the <i class="icon-Spectrum"></i> menu. This will open a dialog box allowing you to remove publication links that are associated to your document.
 
 > **NOTE:** In some cases, if you remove the file from the website or the post from the blog, the document will no longer be published on that location.
 
@@ -144,7 +139,7 @@ Since one document can be published on multiple locations, you can list and mana
 Markdown Extra
 --------------
 
-**StackEdit** supports **Markdown Extra**, which extends **Markdown** syntax with some nice features.
+**Spectrum** supports **Markdown Extra**, which extends **Markdown** syntax with some nice features.
 
 
 ### Tables
@@ -246,7 +241,7 @@ $$
 > - about **Prettify** syntax highlighting [here][4].
 > - about **Highlight.js** syntax highlighting [here][5].
 
-  [^stackedit]: StackEdit is a free, open-source Markdown editor based on PageDown, the Markdown library used by Stack Overflow and the other Stack Exchange sites.
+  [^Spectrum]: Spectrum is a free, open-source Markdown editor based on PageDown, the Markdown library used by Stack Overflow and the other Stack Exchange sites.
 
 
   [1]: http://math.stackexchange.com/
