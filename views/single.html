@@ -2,10 +2,9 @@
 {% block title %}Home{% endblock %}
 {% block body %}
 
-  <h2><a href="/{{url}}"> {{ title }} </a></h2>
-    <span>email: {{ email }}</span>
-  <span>Author: {{ author }}</span>
-  <span>Posted On: {{ postedOn }}</span>
+  <h2><a href="/{{ url }}">{{ title }}</a></h2>
+  <span><i class="icon-user"></i> <a href="email:{{ email }}">{{ author }}</a>
+  <i class="icon-time"></i> {{ postedOn }}</span>
   {{ content }}
 
 {% endblock %}
