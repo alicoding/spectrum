@@ -6,6 +6,7 @@
 		"start": "node server.js"
 	},
 	"dependencies": {
+		"dateformat": "1.0.6-1.2.3",
 		"elasticsearch": "~0.3.6",		
 		"express": "3.3.4",
 		"habitat": "0.4.1",
