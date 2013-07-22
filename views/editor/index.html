@@ -286,24 +286,29 @@ $("#post").click(function () {
 
 function publish() {
   var _title = $('#title').val(),
-    _url = $('.slug').val();
-  var theContent = $('#kramdown-input').val();
+    _url = convertToSlug(_title.trim());
+  var markdown = $('#kramdown-input').val(),
+      html = $('#output').html();
+
   if (!_title) {
     return alert("Please enter the title");
   }
-  if (!theContent) {
+  if (!markdown) {
     return alert("Please enter some content");
   }
+
   var editPost = '{{mode}}';
   if (editPost != "edit") {
     saveToServerAjaxCall('/new/post', {
-      data: theContent,
+      markdown: markdown,
+      html: html,
       title: _title,
       url: _url
     });
   } else {
     saveToServerAjaxCall('/edit/post', {
-      data: theContent,
+      markdown: markdown,
+      html: html,
       title: _title,
       url: _url
     });
@@ -326,6 +331,13 @@ function saveToServerAjaxCall(url, data) {
       window.location.href = '/' + data.url;
     }
   });
+}
+
+function convertToSlug(Text) {
+  return Text
+  .toLowerCase()
+  .replace(/ /g, ' ')
+  .replace(/[^\w-]+/g, ' ');
 }
 
 </script>
