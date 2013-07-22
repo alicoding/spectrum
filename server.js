@@ -22,6 +22,8 @@ app.configure(function () {
   app.use(express.logger('dev'));
   app.use( express.compress());
   app.use( express.bodyParser() );
+  app.use(express.errorHandler());
+  app.locals.pretty = true;
   app.use(express.static(__dirname + '/public'));
 
   var optimize = NODE_ENV !== "development",
