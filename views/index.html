@@ -5,7 +5,7 @@
 
 {% for post in posts %}
   <h2><a href="/{{ post.url }}">{{ post.title }}</a></h2>
-  <span><i class="icon-user"></i> <a href="email:{{ post.email }}">{{ post.author }}</a>
+  <span><i class="icon-user"></i> <a href="mailto:{{ post.email }}">{{ post.author }}</a>
   <i class="icon-time"></i> {{ post.postedOn }}</span>
 {% endfor %}
 </div>
