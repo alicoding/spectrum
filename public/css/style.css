@@ -1,0 +1,67 @@
+html, body {
+	height: 100%;
+	padding: 0;
+	margin: 0;
+	font-family: Helvetica, Arial, sans-serif;
+	color: #444444;
+}
+
+.navbar {
+	margin-bottom: 0;
+}
+
+.navbar .input-xlarge {
+	height: auto;
+	margin-top: 10px;
+}
+
+* { 
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+#input, #output {
+	width: 50%;
+	position: absolute;
+	max-height: 100%;
+	height: 100%;
+}
+
+#input {
+	left: 0;
+	border-right: 1px solid #dedede;
+}
+
+#output {
+	right: 0;
+	overflow: auto;
+	padding: 1%;
+	background-color: #eee;
+	word-wrap: break-word;
+
+}
+
+#input textarea {
+	width: 100%;
+	border: 0;
+	height: 99%;
+	padding: 20px;
+	outline: 0;
+	font-size: 16px;
+}
+
+pre code {
+	border-radius: 5px;
+	padding: 1em;
+	line-height: 1.3em;
+}
+
+#output, textarea, pre code {
+	font-family: Menlo, Monaco, Consolas, "Lucida Console", "Courier New", Monospace;
+}
+
+table {
+	width: 95%;
+}

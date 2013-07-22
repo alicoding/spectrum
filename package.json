@@ -1,0 +1,20 @@
+{
+	"name": "spectrum",
+	"version": "0.0.1",
+	"private": true,
+	"scripts": {
+		"start": "node server.js"
+	},
+	"dependencies": {
+		"dateformat": "1.0.6-1.2.3",
+		"elasticsearch": "~0.3.6",		
+		"express": "3.3.4",
+		"habitat": "0.4.1",
+		"less-middleware": "0.1.12",
+		"nunjucks": "0.1.9",
+		"path": "0.4.9",
+		"request": "2.22.0",
+		"slug": "0.3.3",
+		"winston": "0.7.1"
+	}
+}
