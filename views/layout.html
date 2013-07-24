@@ -12,22 +12,20 @@
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-	{% block header %}
-    <div class="container">
-      <div class="page-header">
-        <h1><a href="/">Spectrum</a> <br><small>Spectrum is a CMS written in JavaScript on both the client and server sides.</small></h1>
-      </div>
-    {% include "nav.html" %}
-  {% endblock %}
+
+  {% include "header.html" %}
+<section class='container'>
   {% block body %}
   {% endblock %}
+  </section>
 </div>
 <div class="clearfix"></div>
-    {% block footer %}
-    <script src="/ext/js/jquery.js"></script>
-    <script src="/ext/js/bootstrap.min.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
-    {% endblock %}
+
+<footer class='container'>
+{% include "footer.html" %}
+</footer>
+
+
 </body>
 </html>
 
