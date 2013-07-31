@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/alicoding/spectrum.png)](https://travis-ci.org/alicoding/spectrum)
+
 ##Spectrum
 
 Spectrum is a CMS written in JavaScript on both the client and server sides.
