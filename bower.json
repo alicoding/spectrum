@@ -1,0 +1,14 @@
+{
+  "name": "spectrum",
+  "dependencies": {
+    "font-awesome": "latest",
+    "jquery": "latest",
+    "bootstrap": "latest",
+    "jquery.tagsinput": "latest",
+    "MathJax": "latest",
+    "highlightjs": "latest",
+    "mousetrap": "latest",
+    "speakingurl": "latest",
+    "alertify": "latest"
+  }
+}
