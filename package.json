@@ -1,23 +1,22 @@
 {
   "name": "Spectrum",
-  "description": "A demo app illustrating the usage of express framework, mongoose orm, mongodb and stylus in node.js. The also illustrates how to properly organize your application",
+  "description": "A node blogging system",
   "keywords": [
-    "express",
-    "mongoose",
-    "mongodb",
-    "passport",
-    "demo"
+    "spectrum",
+    "cms",
+    "blog",
+    "nodejs",
+    "node js blog platform"
   ],
-  "version": "3.0.0",
+  "version": "0.1.1",
   "private": false,
-  "author": "Madhusudhan Srinivasa <madhums8@gmail.com> (http://madhums.github.com)",
+  "author": "Ali Al Dallal <ali@alicoding.com> (http://alicoding.github.com)",
   "engines": {
     "node": "0.10.x",
     "npm":  "1.2.x"
   },
   "scripts": {
     "start": "NODE_ENV=development ./node_modules/.bin/nodemon server.js",
-    "test": "NODE_ENV=test ./node_modules/.bin/mocha --reporter spec test/test-*.js",
     "postinstall": "./node_modules/.bin/bower install"
   },
   "dependencies": {
@@ -45,7 +44,6 @@
   "devDependencies": {
     "supertest": "latest",
     "should": "latest",
-    "mocha": "latest",
     "nodemon": "latest"
   }
 }
