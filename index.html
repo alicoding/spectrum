@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <title>Spectrum by alicoding</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>Spectrum</h1>
+        <h2>A node blogging system</h2>
+
+        <section id="downloads">
+          <a href="https://github.com/alicoding/spectrum/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/alicoding/spectrum/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/alicoding/spectrum" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h2>
+<a name="spectrum" class="anchor" href="#spectrum"><span class="octicon octicon-link"></span></a>Spectrum</h2>
+
+<p>Spectrum is a CMS written in JavaScript on both the client and server sides.</p>
+
+<h2>
+<a name="how-to-install-spectrum" class="anchor" href="#how-to-install-spectrum"><span class="octicon octicon-link"></span></a>How To Install Spectrum</h2>
+
+<h3>
+<a name="you-will-need" class="anchor" href="#you-will-need"><span class="octicon octicon-link"></span></a>You Will Need</h3>
+
+<ol>
+<li><a href="http://nodejs.org">node.js</a></li>
+<li><a href="http://elasticsearch.org">elasticsearch</a></li>
+</ol><h3>
+<a name="how-to-run-spectrum" class="anchor" href="#how-to-run-spectrum"><span class="octicon octicon-link"></span></a>How To Run Spectrum</h3>
+
+<p>After you have installed the above requirements you will be ready to run spectrum:</p>
+
+<ol>
+<li>Run elasticsearch via command line with the command <code>elasticsearch -f</code>.</li>
+<li>After you have elasticsearch running use the <code>npm install</code> command to install all dependencies.</li>
+<li>Run the server via the command line with the command <code>node server.js</code>.</li>
+</ol><h2>
+<a name="available-pages" class="anchor" href="#available-pages"><span class="octicon octicon-link"></span></a>Available Pages</h2>
+
+<ol>
+<li>
+<strong>Homepage</strong> (<a href="http://localhost:3000">http://localhost:3000</a>)</li>
+<li>
+<strong>Create New Post</strong> (<a href="http://localhost:3000/new/post">http://localhost:3000/new/post</a>)</li>
+<li>
+<strong>Edit Post</strong> (<a href="http://localhost:3000/:id/edit">http://localhost:3000/:id/edit</a>)</li>
+</ol><p>Where <strong>:id</strong> is equal to the url of the page. For example in the following URL <strong>hello-world</strong> would be the ID of the post.</p>
+
+<pre><code>http://localhost:3000/hello-world/edit
+</code></pre>
+
+<h2>
+<a name="api" class="anchor" href="#api"><span class="octicon octicon-link"></span></a>API</h2>
+
+<h3>
+<a name="singlehtml" class="anchor" href="#singlehtml"><span class="octicon octicon-link"></span></a>Single.html</h3>
+
+<p>You can use the following variables on this page:</p>
+
+<div class="highlight"><pre>      {{ url }} -- URL of the post.
+      {{ title }} -- Title of the post.
+      {{ email }} -- Email address of the author.
+      {{ author }} -- Author's name.
+      {{ postedOn }} -- Date posted.
+      {{ content }} -- Content of the post.
+</pre></div>
+
+<h3>
+<a name="indexhtml" class="anchor" href="#indexhtml"><span class="octicon octicon-link"></span></a>Index.html</h3>
+
+<p>This is the home page. By default it contains the 10 most recent posts. We are using nunjucks to render the page, and with that we are benefiting with their great features such as the for loop.</p>
+
+<p>In this example we are going to loop through <code>posts</code> which is an object containing an array of blog posts</p>
+
+<div class="highlight"><pre>    <span class="p">{</span><span class="o">%</span> <span class="k">for</span> <span class="nx">post</span> <span class="k">in</span> <span class="nx">posts</span> <span class="o">%</span><span class="p">}</span>
+      <span class="p">{{</span> <span class="nx">post</span><span class="p">.</span><span class="nx">url</span> <span class="p">}}</span>
+      <span class="p">{{</span> <span class="nx">post</span><span class="p">.</span><span class="nx">title</span> <span class="p">}}</span>
+      <span class="p">{{</span> <span class="nx">post</span><span class="p">.</span><span class="nx">email</span> <span class="p">}}</span>
+      <span class="p">{{</span> <span class="nx">post</span><span class="p">.</span><span class="nx">author</span> <span class="p">}}</span>
+      <span class="p">{{</span> <span class="nx">post</span><span class="p">.</span><span class="nx">postedOn</span> <span class="p">}}</span>
+    <span class="p">{</span><span class="o">%</span> <span class="nx">endfor</span> <span class="o">%</span><span class="p">}</span>
+</pre></div>
+
+<h3>
+<a name="paginationhtml" class="anchor" href="#paginationhtml"><span class="octicon octicon-link"></span></a>Pagination.html</h3>
+
+<p>For the pagination we have an API that will be used to detect the current page as well as the next page. We also check if whether or not the next page has a post.</p>
+
+<div class="highlight"><pre><span class="nt">&lt;ul</span> <span class="na">class=</span><span class="s">"pager"</span><span class="nt">&gt;</span>
+    {% if hasPrevious == true %}
+    <span class="nt">&lt;li&gt;&lt;a</span> <span class="na">href=</span><span class="s">"/page/{{prevPage}}"</span><span class="nt">&gt;</span>Previous<span class="nt">&lt;/a&gt;&lt;/li&gt;</span>
+    {% endif %}
+    {% if hasNext == true %}
+    <span class="nt">&lt;li&gt;&lt;a</span> <span class="na">href=</span><span class="s">"/page/{{nextPage}}"</span><span class="nt">&gt;</span>Next<span class="nt">&lt;/a&gt;&lt;/li&gt;</span>
+    {% endif %}
+<span class="nt">&lt;/ul&gt;</span>
+</pre></div>
+      </section>
+    </div>
+
+    
+  </body>
+</html>
