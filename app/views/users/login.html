@@ -1,0 +1,25 @@
+{% extends "layouts/default.html" %}
+{% block title %}Home{% endblock %}
+{% block body %}
+{% include "users/auth.html" %}
+<form action="/users/session" method="post" class="offset1 login form-horizontal">
+  <input type="hidden" name="_csrf" value="{{csrf}}">
+  <p class="offset2 error">{{article}}</p>
+  <div class="control-group">
+    <label for="email" class="control-label">Email</label>
+    <div class="controls">
+      <input id="email" type="email" name="email" placeholder="Email" class="input-medium">
+    </div>
+  </div>
+  <div class="control-group">
+    <label for="password" class="control-label">Password</label>
+    <div class="controls">
+      <input id="password" type="password" name="password" placeholder="Password" class="input-medium">
+    </div>
+  </div>
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary">Login</button>&nbsp;
+    or&nbsp;<a href="/signup" class="show-signup">sign up</a>
+  </div>
+</form>
+{% endblock %}

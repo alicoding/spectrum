@@ -1,0 +1,55 @@
+{% extends "layouts/default.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block body %}
+
+{% if not article.isNew %}
+  {% set articleAction = "/" + article._id %}
+{% else %}
+  {% set articleAction = "/" %}
+{% endif %}
+
+<h1>{{title}}</h1>
+<hr>
+<div class="row">
+  <div class="span7">
+    <form method="post" action="{{articleAction}}" enctype="multipart/form-data" class="form-horizontal">
+      <input type="hidden" name="_csrf" value="{{csrf_token}}">
+      <input type="hidden" name="_id" value="test-id-new">
+      {% if not article.isNew %}
+      <input type="hidden" name="_method" value="PUT">
+      {% endif %}
+      <div class="control-group">
+        <label for="title" class="control-label">Title</label>
+        <div class="controls">
+          <input id="title" type="text" name="title" value="{{article.title}}" placeholder="Enter the title" class="input-xlarge">
+        </div>
+      </div>
+      <div class="control-group">
+        <label for="title" class="control-label">Image</label>
+        <div class="controls">
+          <input type="file" name="image[]">
+        </div>
+      </div>
+      <div class="control-group">
+        <label for="desc" class="control-label">Body</label>
+        <div class="controls">
+          <textarea id="desc" type="text" rows="5" name="body" placeholder="Enter the article description" class="input-xlarge">{{article.body}}</textarea>
+        </div>
+      </div>
+      <div class="control-group">
+        <label for="desc" class="control-label">Tags</label>
+        <div class="controls">
+          <input id="tags" type="text" name="tags" value="{{article.tags}}" placeholder="Enter the tags">
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Save changes</button>&nbsp;<a href="/" title="cancel" class="btn">Cancel</a>
+      </div>
+    </form>
+  </div>
+  <div class="span5">
+    {% if not article.isNew and not article.image and article.image.files and article.image.files.length %}
+    {% endif %}
+  </div>
+</div>
+ {% endblock %}

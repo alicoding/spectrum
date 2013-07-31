@@ -1,0 +1,34 @@
+{% extends "layouts/default.html" %}
+{% block title %}Home{% endblock %}
+{% block body %}
+
+<h1>{{title}}</h1>
+{% if articles.length %}
+{% for article in articles %}
+<div class="article">
+	<h3><a href="/{{article._id}}" title="{{article.title}}">{{article.title}}</a></h3>
+	<p class="lead">{{article.body}}</p>
+	<div class="meta muted"><span><i class="icon-time"></i> {{ formatDate(article.createdAt) }}</span>&nbsp; - &nbsp;<span><i class="icon-user"></i> </span><a href="/users/{{article.user._id}}">{{article.user.name}}</a>&nbsp;
+		{% if article.tags %}
+		{% for tag in article.tags.split(',') %}
+		<a href="/tags/{{tag}}" class="tag"><i class="icon-tags"></i> {{tag}}</a>&nbsp;
+		{% endfor %}
+		{% endif %}
+
+	</div>
+</div>
+{% endfor %}
+{% else %}
+<p class="muted">No articles.&nbsp;<a href="/articles/new">create one</a></p>
+
+{% endif %}
+
+<ul class="pagination">
+{% if pages > 1 %}
+    {{ createPagination(pages, page) }}
+</ul>
+{% endif %}
+
+
+
+{% endblock %}

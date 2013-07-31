@@ -1,0 +1,187 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{{title}}</title>
+    <script src="http://cdn.craig.is/js/mousetrap/mousetrap.min.js"></script>
+
+  <script language="javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  <link rel="stylesheet" href="http://yandex.st/highlightjs/7.3/styles/github.min.css">
+  <script src="http://yandex.st/highlightjs/7.3/highlight.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/bootstrap-responsive.min.css">
+
+    <style>
+    html, body {
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  font-family: Helvetica, Arial, sans-serif;
+  color: #444444;
+}
+
+.navbar {
+  margin-bottom: 0;
+}
+
+.navbar .input-xlarge {
+  height: auto;
+  margin-top: 10px;
+}
+
+* { 
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+#input, #output {
+  width: 50%;
+  position: absolute;
+  max-height: 100%;
+  height: 100%;
+}
+
+#input {
+  left: 0;
+  border-right: 1px solid #dedede;
+}
+
+#output {
+  right: 0;
+  overflow: auto;
+  padding: 1%;
+  background-color: #eee;
+  word-wrap: break-word;
+
+}
+
+#input textarea {
+  width: 100%;
+  border: 0;
+  height: 99%;
+  padding: 20px;
+  outline: 0;
+  font-size: 16px;
+}
+
+pre code {
+  border-radius: 5px;
+  padding: 1em;
+  line-height: 1.3em;
+}
+
+#output, textarea, pre code {
+  font-family: Menlo, Monaco, Consolas, "Lucida Console", "Courier New", Monospace;
+}
+
+table {
+  width: 95%;
+}
+</style>
+
+</head>
+<body>
+<div class="navbar">
+  <div class="navbar-inner">
+    <ul class="nav">
+      <li><input id="title" class="input-xlarge mousetrap" type="text" value="{{article.title}}"
+        placeholder="Title goes here"></li>
+      <li><i id="post" class="icon-check"></i></li>
+      <li><input class="url" type="hidden"></li>
+    </ul>
+  </div>
+</div>
+<div id="input">
+  <textarea id="kramdown-input" class="mousetrap">{{article.body}}</textarea>
+</div>
+<div id="output"></div>
+<script src="http://spectrum.alicoding.com/js/speakingurl.min.js"></script>
+<script>
+$(function () {
+
+    $('#title').slugIt({
+    output: '.url'
+  });
+
+  $('#kramdown-input').keyup(function () {
+    $.post('/editor/preview', {
+      text: $(this).val(),
+      _csrf: '{{csrf}}'
+    }, function (data) {
+      $('#output').html(data);
+      $('pre code').each(function (i, e) {
+        hljs.highlightBlock(e)
+      });
+      MathJax.Hub.Queue(['Typeset', MathJax.Hub]);
+    });
+  });
+  $('#kramdown-input').trigger('keyup');
+});
+Mousetrap.bind('command+enter', function (e, combo) {
+  publish();
+});
+$("#post").click(function () {
+  publish();
+});
+
+function publish() {
+  var title = $('#title').val(),
+    url = $('.url').val(),
+    html = $('#output').html();
+
+  if (!title) {
+    return alert("Please enter the title");
+  }
+  if (!$('#kramdown-input').val()) {
+    return alert("Please enter some content");
+  }
+
+  var editPost = '{{mode}}';
+  if (editPost != "edit") {
+    saveToServerAjaxCall('POST', '/', {
+      body: html,
+      title: title,
+      _csrf: '{{csrf}}',
+      _id: url
+    });
+  } else {
+    saveToServerAjaxCall('PUT', '/{{article._id}}', {
+      body: html,
+      title: title,
+      _csrf: '{{csrf}}',
+      _id: '{{article._id}}'
+    });
+  }
+}
+
+function saveToServerAjaxCall(type, url, data) {
+  $.ajax({
+    type: type,
+    data: JSON.stringify(data),
+    contentType: 'application/json',
+    url: url,
+    statusCode: {
+      200: function (response) {},
+      201: function (response) {},
+      401: function (response) {},
+      404: function (response) {}
+    },
+    success: function (data) {
+      window.location.href = '/' + data.url;
+    },
+    error: function(e) {
+      console.log("Error " + e.messages);
+    }
+  });
+}
+</script>
+
+</body>
+</html>

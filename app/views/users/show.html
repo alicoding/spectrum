@@ -1,0 +1,9 @@
+{% extends "layouts/default.html" %}
+{% block title %}{{user.name}}{% endblock %}
+{% block body %}
+
+{{user.name}}<br>
+{{user._id}}<br>
+{{user.username}}<br>
+{{user.email}}
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "layouts/default.html" %}
+{% block body %}
+
+<h1>{{article.title}}</h1>
+  <div class="row">
+    <div class="span9">
+      <p>{{article.body}}</p>
+      <div class="meta muted">
+        <p><i class="icon-user"></i> <a href="/users/{{article.user._id}}">{{article.user.name}}</a></p>
+        <p class="muted"><i class="icon-time"></i> {{ formatDate(article.createdAt) }}</p>
+        {% if article.tags %}
+          <div class="tags">        
+          {% for tag in article.tags.split(',') %}
+            <i class="icon-tags"></i> <a href="/tags/{{tag}}" class="tag">{{tag}}</a>&nbsp;&nbsp;
+          {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+    <div class="span3"></div>
+  </div>
+  {% if req.isAuthenticated() %}
+    <p>
+      <br>
+      <form action="/{{article._id}}" method="post" class="center form-inline confirm">
+        <input type="hidden" name="_csrf" value="{{csrf}}"><a href="/{{article._id}}/edit" title="edit" class="btn btn-default">Edit</a>
+        <input type="hidden" name="_method" value="DELETE">
+        <button type="submit" class="btn btn-danger">delete</button>
+      </form>
+    </p>
+  {% endif %}
+
+{% endblock %}
