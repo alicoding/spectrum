@@ -1,68 +1,76 @@
-[![Build Status](https://travis-ci.org/madhums/nodejs-express-mongoose-demo.png)](https://travis-ci.org/madhums/nodejs-express-mongoose-demo)
+##Spectrum
 
-# Nodejs Express Mongoose Demo
+Spectrum is a CMS written in JavaScript on both the client and server sides.
 
-This is a demo node.js application illustrating various features used in everyday web development, with a fine touch of best practices. The demo app is a blog application where users (signing up using facebook, twitter, github and simple registrations) can create an article, delete an article and add comments on the article.
+##How To Install Spectrum
 
-Read the [wiki](https://github.com/madhums/node-express-mongoose/wiki) (or the [old blog post](http://madhums.me/2012/07/19/breaking-down-app-js-file-nodejs-express-mongoose/)) for the application architecture.
+###You Will Need
+ 1. [node.js][1]
+ 2. [elasticsearch][2]
 
-Want to build something from scratch? use the [boilerplate app](https://github.com/madhums/node-express-mongoose)
+###How To Run Spectrum
 
-## Install
+After you have installed the above requirements you will be ready to run spectrum:
 
-**NOTE:** You need to have node.js, mongodb and [imagemagick](http://www.imagemagick.org/script/index.php) installed and running.
+ 1. Run elasticsearch via command line with the command `elasticsearch -f`.
+ 2. After you have elasticsearch running use the `npm install` command to install all dependencies.
+ 3. Run the server via the command line with the command `node server.js`.
 
-```sh
-  $ git clone git://github.com/madhums/nodejs-express-mongoose-demo.git
-  $ npm install
-  $ cp config/config.example.js config/config.js
-  $ cp config/imager.example.js config/imager.js
-  $ npm start
+##Available Pages
+
+ 1. **Homepage** (<http://localhost:3000>)
+ 2. **Create New Post** (<http://localhost:3000/new/post>)
+ 3. **Edit Post** (<http://localhost:3000/:id/edit>)
+
+Where **:id** is equal to the url of the page. For example in the following URL **hello-world** would be the ID of the post.
+
+    http://localhost:3000/hello-world/edit
+
+##API
+
+###Single.html
+
+You can use the following variables on this page:
+
+``` html
+      {{ url }} -- URL of the post.
+      {{ title }} -- Title of the post.
+      {{ email }} -- Email address of the author.
+      {{ author }} -- Author's name.
+      {{ postedOn }} -- Date posted.
+      {{ content }} -- Content of the post.
 ```
 
-**NOTE:** Do not forget to update your facebook twitter and github APP_ID and APP_SECRET in `config/config.js`. Also if you want to use image uploads, don't forget to replace the S3 and Rackspace keys in `config/imager.js`.
+###Index.html
 
-Then visit [http://localhost:3000/](http://localhost:3000/)
+This is the home page. By default it contains the 10 most recent posts. We are using nunjucks to render the page, and with that we are benefiting with their great features such as the for loop.
 
-## Related modules
+In this example we are going to loop through `posts` which is an object containing an array of blog posts
 
-1. [node-genem](https://github.com/madhums/node-genem) A module to generate the MVC skeleton using this approach.
-2. [node-notifier](http://github.com/madhums/node-notifier) - used for notifications via emails and push notificatiions
-3. [node-imager](http://github.com/madhums/node-imager) - used to resize, crop and upload images to S3/rackspace
-4. [node-view-helpers](http://github.com/madhums/node-view-helpers) - some common view helpers
-5. [mongoose-migrate](https://github.com/madhums/mongoose-migrate#readme) - Keeps track of the migrations in a mongodb collection (fork of visionmedia/node-migrate)
-6. [mongoose-user](http://github.com/madhums/mongoose-user) - Generic methods, statics and virtuals used for user schemas
-
-## Directory structure
-```
--app/
-  |__controllers/
-  |__models/
-  |__mailer/
-  |__views/
--config/
-  |__routes.js
-  |__config.js
-  |__passport.js (auth config)
-  |__imager.js (imager config)
-  |__express.js (express.js configs)
-  |__middlewares/ (custom middlewares)
--public/
+``` javascript
+    {% for post in posts %}
+      {{ post.url }}
+      {{ post.title }}
+      {{ post.email }}
+      {{ post.author }}
+      {{ post.postedOn }}
+    {% endfor %}
 ```
 
-## Tests
+###Pagination.html
 
-```sh
-$ npm test
+For the pagination we have an API that will be used to detect the current page as well as the next page. We also check if whether or not the next page has a post.
+
+``` html
+<ul class="pager">
+    {% if hasPrevious == true %}
+    <li><a href="/page/{{prevPage}}">Previous</a></li>
+    {% endif %}
+    {% if hasNext == true %}
+    <li><a href="/page/{{nextPage}}">Next</a></li>
+    {% endif %}
+</ul>
 ```
 
-## License
-(The MIT License)
-
-Copyright (c) 2012 Madhusudhan Srinivasa < [madhums8@gmail.com](mailto:madhums8@gmail.com) >
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+[1]: http://nodejs.org
+[2]: http://elasticsearch.org
