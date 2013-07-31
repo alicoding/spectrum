@@ -3,18 +3,10 @@
 <head>
   <meta charset="utf-8">
   <title>{{title}}</title>
-    <script src="http://cdn.craig.is/js/mousetrap/mousetrap.min.js"></script>
-
-  <script language="javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-
-  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  <link rel="stylesheet" href="http://yandex.st/highlightjs/7.3/styles/github.min.css">
-  <script src="http://yandex.st/highlightjs/7.3/highlight.min.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <link rel="stylesheet" href="/css/bootstrap.min.css">
-  <link rel="stylesheet" href="/css/bootstrap-responsive.min.css">
+  <link rel="stylesheet" href="/bower/highlightjs/styles/github.css">
+  <link rel="stylesheet" href="/bower/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/bower/font-awesome/css/font-awesome.css">
 
     <style>
     html, body {
@@ -102,14 +94,13 @@ table {
   <textarea id="kramdown-input" class="mousetrap">{{article.body}}</textarea>
 </div>
 <div id="output"></div>
-<script src="http://spectrum.alicoding.com/js/speakingurl.min.js"></script>
+<script type="text/javascript" src="/bower/mousetrap/mousetrap.min.js"></script>
+<script type="text/javascript" src="/bower/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="/bower/MathJax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript" src="/bower/highlightjs/highlight.pack.js"></script>
+<script type="text/javascript" src="/bower/speakingurl/speakingurl.min.js"></script>
 <script>
 $(function () {
-
-    $('#title').slugIt({
-    output: '.url'
-  });
-
   $('#kramdown-input').keyup(function () {
     $.post('/editor/preview', {
       text: $(this).val(),
@@ -133,7 +124,7 @@ $("#post").click(function () {
 
 function publish() {
   var title = $('#title').val(),
-    url = $('.url').val(),
+    url = getSlug(title),
     html = $('#output').html();
 
   if (!title) {
