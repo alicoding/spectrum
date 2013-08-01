@@ -88,11 +88,15 @@ exports.create = function (req, res) {
  */
 
 exports.edit = function (req, res) {
-  res.render('articles/edit.html', {
-    title: 'Edit ' + req.article.title,
-    article: req.article,
-    mode: "edit"
-  })
+
+  htmlToMD(req.article.body, fileNameGenerator(), function (data) {
+    req.article.body = data;
+    res.render('articles/edit.html', {
+      title: 'Edit ' + req.article.title,
+      article: req.article,
+      mode: "edit"
+    });
+  });
 }
 
 /**
@@ -148,6 +152,22 @@ exports.editorPreview = function (req, res){
   function fileNameGenerator () {
     return path.join(__dirname + crypto.randomBytes(4).readUInt32LE(0));
   }
+
+function htmlToMD (data, filename, callback) { 
+
+    fs.writeFile(filename, data, function (err) {
+      if (err) throw err;
+      child = exec('kramdown -i html ' + filename + ' -o kramdown', function (error, stdout, stderr) {
+        if (error) {
+          callback(500);
+        }
+        fs.unlink(filename, function (err) {
+          if (err) throw err;
+        });
+        callback(stdout);
+      });
+    });
+  }  
 
 function parseToHTML(data, filename, callback) {
     

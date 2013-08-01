@@ -5,7 +5,7 @@ $(document).ready(function () {
     e.preventDefault();
     var self = this;
     var msg = 'Are you sure?';
-    bootbox.confirm(msg, 'cancel', 'Yes! I am sure', function (action) {
+    alertify.confirm(msg, function (action) {
       if (action) {
         $(self).unbind('submit');
         $(self).trigger('submit');
