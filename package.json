@@ -16,7 +16,7 @@
     "npm":  "1.2.x"
   },
   "scripts": {
-    "start": "NODE_ENV=development ./node_modules/.bin/nodemon server.js",
+    "start": "./node_modules/.bin/nodemon server.js",
     "postinstall": "./node_modules/.bin/bower install"
   },
   "dependencies": {
@@ -38,6 +38,7 @@
     "passport-local": "latest",
     "passport-twitter": "latest",
     "path": "latest",
+    "habitat": "0.4.1",
     "underscore": "latest",
     "view-helpers": "latest"
   },

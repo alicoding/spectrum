@@ -20,8 +20,8 @@ var express = require('express')
 
 // Load configurations
 // if test env, load example file
-var env = process.env.NODE_ENV || 'development'
-  , config = require('./config/config')[env]
+var env = require('./config/environment')
+  , config = require('./config/config')[env.get("NODE_ENV")]
   , mongoose = require('mongoose')
 
 // Bootstrap db connection
@@ -44,9 +44,9 @@ require('./config/express')(app, config, passport)
 require('./config/routes')(app, passport)
 
 // Start the app by listening on <port>
-var port = process.env.PORT || 3000
-app.listen(port)
-console.log('Express app started on port '+port)
+app.listen( env.get('PORT'), function() {
+  console.log("HTTP server listening on port " + env.get('PORT') + ".");
+});
 
 // expose app
 exports = module.exports = app

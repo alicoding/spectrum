@@ -1,84 +1,7 @@
 <!doctype html>
 <html class="no-js" lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>{{title}}</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/bower/highlightjs/styles/github.css">
-  <link rel="stylesheet" href="/bower/bootstrap/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="/bower/font-awesome/css/font-awesome.css">
+{% include "includes/head.html" %}
 
-    <style>
-    html, body {
-  height: 100%;
-  padding: 0;
-  margin: 0;
-  font-family: Helvetica, Arial, sans-serif;
-  color: #444444;
-}
-
-.navbar {
-  margin-bottom: 0;
-}
-
-.navbar .input-xlarge {
-  height: auto;
-  margin-top: 10px;
-}
-
-* { 
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  -ms-box-sizing: border-box;
-  box-sizing: border-box;
-}
-
-#input, #output {
-  width: 50%;
-  position: absolute;
-  max-height: 100%;
-  height: 100%;
-}
-
-#input {
-  left: 0;
-  border-right: 1px solid #dedede;
-}
-
-#output {
-  right: 0;
-  overflow: auto;
-  padding: 1%;
-  background-color: #eee;
-  word-wrap: break-word;
-
-}
-
-#input textarea {
-  width: 100%;
-  border: 0;
-  height: 99%;
-  padding: 20px;
-  outline: 0;
-  font-size: 16px;
-}
-
-pre code {
-  border-radius: 5px;
-  padding: 1em;
-  line-height: 1.3em;
-}
-
-#output, textarea, pre code {
-  font-family: Menlo, Monaco, Consolas, "Lucida Console", "Courier New", Monospace;
-}
-
-table {
-  width: 95%;
-}
-</style>
-
-</head>
 <body>
 <div class="navbar">
   <div class="navbar-inner">
@@ -94,11 +17,11 @@ table {
   <textarea id="kramdown-input" class="mousetrap">{{article.body}}</textarea>
 </div>
 <div id="output"></div>
+{% include "includes/foot.html" %}
 <script type="text/javascript" src="/bower/mousetrap/mousetrap.min.js"></script>
-<script type="text/javascript" src="/bower/jquery/jquery.min.js"></script>
-<script type="text/javascript" src="/bower/MathJax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 <script type="text/javascript" src="/bower/highlightjs/highlight.pack.js"></script>
 <script type="text/javascript" src="/bower/speakingurl/speakingurl.min.js"></script>
+<script src="/bower/jquery.tagsinput/jquery.tagsinput.min.js"></script>
 <script>
 $(function () {
   $('#kramdown-input').keyup(function () {
