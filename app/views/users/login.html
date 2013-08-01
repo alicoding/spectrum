@@ -2,24 +2,31 @@
 {% block title %}Home{% endblock %}
 {% block body %}
 {% include "users/auth.html" %}
-<form action="/users/session" method="post" class="offset1 login form-horizontal">
+
+{% if message != false %}
+<div class="alert">
+  <button type="button" class="close" data-dismiss="alert">&times;</button>
+  {{message}}
+</div>
+
+{% endif %}
+
+<form action="/users/session" method="post" class="form-inline">
   <input type="hidden" name="_csrf" value="{{csrf}}">
   <p class="offset2 error">{{article}}</p>
   <div class="control-group">
-    <label for="email" class="control-label">Email</label>
-    <div class="controls">
-      <input id="email" type="email" name="email" placeholder="Email" class="input-medium">
+    <div class="col-lg-4">
+      <input id="email" type="email" name="email" placeholder="Email" class="form-control">
     </div>
   </div>
-  <div class="control-group">
-    <label for="password" class="control-label">Password</label>
-    <div class="controls">
-      <input id="password" type="password" name="password" placeholder="Password" class="input-medium">
+    <div class="col-lg-4">
+      <input id="password" type="password" name="password" placeholder="Password" class="form-control">
     </div>
-  </div>
   <div class="form-actions">
     <button type="submit" class="btn btn-primary">Login</button>&nbsp;
     or&nbsp;<a href="/signup" class="show-signup">sign up</a>
   </div>
 </form>
+
+
 {% endblock %}

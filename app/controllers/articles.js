@@ -73,8 +73,6 @@ exports.create = function (req, res) {
   var article = new Article(req.body);
   article.user = req.user;
 
-  console.log(article);
-
   article.save(function (err) {
     if (!err) {
       req.flash('success', 'Successfully created article!');

@@ -1,18 +1,29 @@
+
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="https://www.facebook.com/2008/fbml" itemscope="itemscope" itemtype="http://schema.org/Product">
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>{{title}} - {{pkg.name}}</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+<meta name="keywords" content="{{pkg.keywords.join(",")}}">
+<meta name="description">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
   {% include "includes/head.html" %}
+</head>
   <body>
     <div class="wrapper">
       {% include "includes/header.html" %}
       <div class="container">
+        <div class="row">
         <div class="main-content">
-          <div class="main-head">
+          <div class="col-lg-9">
           {% include "includes/messages.html" %}
           {% block body %} {% endblock %}
           </div>
         </div>
       </div>
-      <div class="push"></div>
+      </div>
     </div>
   {% include "includes/footer.html" %} 
   {% include "includes/foot.html" %}
