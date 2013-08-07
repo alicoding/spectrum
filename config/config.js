@@ -15,11 +15,11 @@ var path = require('path')
 
 module.exports = {
   development: {
-    db: 'mongodb://localhost/noobjs_dev',
+    db: 'mongodb://localhost/spectrum',
     root: rootPath,
     notifier: notifier,
     app: {
-      name: 'Nodejs Express Mongoose Demo'
+      name: 'Spectrum is a CMS written in JavaScript on both the client and server sides.'
     },
     facebook: {
       clientID: "APP_ID",
