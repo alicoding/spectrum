@@ -65,7 +65,8 @@ exports.session = login
  * Create user
  */
 
-exports.create = function (req, res) {
+exports.create = function (req, res, next) {
+  // req.body._id = req.body.username;
   var user = new User(req.body)
   user.provider = 'local'
   user.save(function (err) {
