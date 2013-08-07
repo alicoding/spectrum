@@ -8,7 +8,7 @@
     "nodejs",
     "node js blog platform"
   ],
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": false,
   "author": "Ali Al Dallal <ali@alicoding.com> (http://alicoding.github.com)",
   "engines": {
@@ -25,8 +25,6 @@
     "connect-flash": "latest",
     "connect-mongo": "latest",
     "express": "latest",
-    "forever": "latest",
-    "gzippo": "latest",
     "imager": "latest",
     "mongoose": "latest",
     "nunjucks": "latest",
@@ -43,8 +41,6 @@
     "view-helpers": "latest"
   },
   "devDependencies": {
-    "supertest": "latest",
-    "should": "latest",
     "nodemon": "latest"
   }
 }
